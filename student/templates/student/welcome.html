@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hall Ticket</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .hallticket-box {
+            background-color: #fff;
+            border: 3px solid #002147;
+            width: 700px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: left;
+            background-image: url('watermark.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 15px;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-text h1 {
+            font-size: 22px;
+            color: #002147;
+            font-weight: bold;
+            margin-bottom: 0px;
+            margin-top: 5px; /* Adjusted to move text slightly down */
+        }
+
+        .header-text p {
+            font-size: 16px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .divider {
+            border: none;
+            height: 3px;
+            background-color: #002147; /* Dark blue color */
+            margin: 15px 0;
+            width: 100%;
+            display: block;
+        }
+
+        .student-details h2 {
+            font-size: 18px;
+            color: #002147;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 15px;
+            color: #333;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            color: #002147;
+        }
+
+        .start-exam-btn {
+            display: inline-block;
+            background-color: #ffcc00;
+            color: black;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .start-exam-btn:hover {
+            background-color: #ffc107;
+        }
+
+        .no-exam-message {
+            text-align: center;
+            font-size: 16px;
+            color: #ff0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hallticket-box">
+        {% if scheduled_exams %}
+        <div class="header">
+            <img src="{% static 'student/logo2.jpg' %}" alt="Institute Logo" class="logo">
+            <div class="header-text">
+                <h1>Government Polytechnic Nashik</h1>
+                <p>Online Examination System - Hall Ticket</p>
+            </div>
+        </div>
+        <hr class="divider">
+        <div class="student-details">
+            <h2>Hall Ticket</h2>
+            <table>
+                <tr>
+                    <td>Student Name:</td>
+                    <td>{{ student_name }}</td>
+                </tr>
+                <tr>
+                    <td>Roll Number:</td>
+                    <td>{{ student_rollno }}</td>
+                </tr>
+                <tr>
+                    <td>Programme:</td>
+                    <td>{{ branch }}</td>
+                </tr>
+                {% for exam in scheduled_exams %}
+                <tr>
+                    <td>Scheduled Exam:</td>
+                    <td>{{ exam.exam_name }} ({{ exam.exam_type }})</td>
+                </tr>
+                <tr>
+                    <td>Course Code:</td>
+                    <td>{{ exam.course_code }}</td>
+                </tr>
+                <tr>
+                    <td>Exam Duration:</td>
+                    <td>
+                        {% if exam.exam_duration_hours > 0 and exam.exam_duration_minutes > 0 %}
+                            {{ exam.exam_duration_hours }}hrs {{ exam.exam_duration_minutes }}mins
+                        {% elif exam.exam_duration_hours > 0 %}
+                            {{ exam.exam_duration_hours }}hrs
+                        {% else %}
+                            {{ exam.exam_duration_minutes }}mins
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">
+                        <div class="btn-container">
+                            <a href="{% url 'student:start_exam' exam.id %}" class="start-exam-btn">Start Exam</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% else %}
+        <div class="header">
+            <img src="{% static 'student/logo.jpg' %}" alt="Institute Logo" class="logo">
+            <div class="header-text">
+                <h1>Government Polytechnic Nashik</h1>
+                <p>Online Examination System - Hall Ticket</p>
+            </div>
+        </div>
+        <hr class="divider">
+        <div class="student-details">
+            <h2>Hall Ticket</h2>
+            <p class="no-exam-message">You don't have any scheduled exams.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>

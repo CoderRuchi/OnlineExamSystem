@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | Examination Portal</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Arial', sans-serif;
+            color: #34495E;
+        }
+
+        .card {
+            border-radius: 12px;
+            background-color: #ffffff;
+            border: 2px solid #3498db; /* Added border color and thickness */
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .card-body {
+            padding: 40px;
+        }
+
+        h3 {
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .form-label {
+            color: #34495E;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.5);
+        }
+
+        .btn-primary {
+            background-color: #083f75;
+            border-color: #083f75;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #185fa7;
+            border-color: #2C3E50;
+            transform: scale(1.05); /* Slightly enlarges the button on hover */
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        }
+
+
+        .btn-primary:focus {
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.5);
+        }
+
+        .text-center a {
+            color: #f39c12;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            color: #e67e22;
+        }
+
+        .logo {
+            width: 120px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .alert {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <img src="{% static 'student/logo2.jpg' %}" alt="Institute Logo" class="logo">
+
+                <h3>Online Examination Login</h3>
+
+                {% if login_blocked %}
+                <div class="alert alert-warning d-flex align-items-center" role="alert"
+                    style="background-color: #FFF3CD; border-color: #e0c675;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div>
+                            <strong><span style="font-size: 1.3rem;color: #856404;">⚠️</span>
+                                Warning!</strong> You're already logged in on another device.
+                            Please log out from the other device before attempting to log in here.
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} d-flex align-items-center"
+                    role="alert">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {% if message.tags == 'error' %}
+                        <span style="font-size: 1.3rem; color: #842029;">⚠️</span>
+                        {% endif %}
+                        <div>{{ message }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Enter your username" required>
+                    </div>
+                    <div class="mb-3 password-container">
+                        <input type="password" id="password" name="password" class="form-control"
+                            placeholder="Enter your password" required>
+                        <i class="bi bi-eye-slash toggle-password" id="togglePassword"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password visibility toggle
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            let passwordField = document.getElementById('password');
+            let icon = this;
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            }
+        });
+
+        // Prevent going back to previous page after logout
+        window.history.pushState(null, '', window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, '', window.location.href);
+        };
+
+        // Disable browser back button
+        window.addEventListener('load', function () {
+            window.history.pushState({}, '')
+        });
+
+        // Prevent form resubmission
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+
+</body>
+
+</html>

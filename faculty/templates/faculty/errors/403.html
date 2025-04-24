@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 Forbidden - Faculty Portal</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <style>
+        /* Use the same styles as 500.html */
+        /* Copy all the styles from the previous template */
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-header">
+            <h1 class="error-code">{{ error_code }}</h1>
+            <h2 class="error-title">{{ error_message }}</h2>
+        </div>
+        
+        <p class="error-details">{{ error_details }}</p>
+        
+        <div class="technical-section">
+            <h3>Technical Information</h3>
+            <h4>Common Causes:</h4>
+            <ul>
+                {% for cause in technical_details.common_causes %}
+                    <li>{{ cause }}</li>
+                {% endfor %}
+            </ul>
+            
+            <h4>Recommended Solutions:</h4>
+            <ul>
+                {% for solution in technical_details.solutions %}
+                    <li>{{ solution }}</li>
+                {% endfor %}
+            </ul>
+            
+            <p class="timestamp">Timestamp: {{ technical_details.timestamp }}</p>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{% url 'faculty_login' %}" class="btn btn-primary">Login Again</a>
+            <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+        </div>
+    </div>
+
+    <script>
+        // Check if this was a CSRF error
+        if (window.location.href.includes("csrf")) {
+            // Automatically reload the page after 2 seconds
+            setTimeout(function() {
+                window.location.reload();
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

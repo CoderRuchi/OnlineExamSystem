@@ -1,0 +1,1704 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Exam</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+       body {
+            margin: 0;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            background: #F4F6F7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        /* Root Variables - Expanded for precision */
+        :root {
+            /* Layout dimensions */
+            --navbar-height: 60px;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 80px;
+            
+            /* Other variables remain the same */
+            --primary-color: #1a4b84;
+            --secondary-color: #2d6dad;
+            --accent-color: #ffd93d;
+            --danger-color: #dc3545;
+            --text-light: #ffffff;
+            --text-dark: #1a3b5d;
+            --transition-speed: 0.3s;
+            --gradient-blue: linear-gradient(135deg, #1a4b84 0%, #2d6dad 100%);
+            --box-shadow: 3px 0 20px rgba(26, 75, 132, 0.15);
+            --hover-bg: rgba(255, 255, 255, 0.15);
+            --active-bg: rgba(255, 217, 61, 0.9);
+            --bg-off-white: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+            /* Add these main content styles */
+            .main-content {
+                margin-left: var(--sidebar-width);
+                padding: 20px;
+                min-height: calc(100vh - var(--navbar-height));
+                transition: margin-left var(--transition-speed) ease;
+                width: calc(100% - var(--sidebar-width));
+            }
+
+            .main-content.expanded {
+                margin-left: var(--sidebar-collapsed-width);
+                width: calc(100% - var(--sidebar-collapsed-width));
+            }
+
+            /* Navbar styles */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: var(--sidebar-width);
+                height: var(--navbar-height);
+                width: calc(100% - var(--sidebar-width));
+                background: white;
+                padding: 0 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+                transition: left var(--transition-speed) ease, width var(--transition-speed) ease;
+            }
+
+            .navbar.collapsed {
+                left: var(--sidebar-collapsed-width);
+                width: calc(100% - var(--sidebar-collapsed-width));
+            }
+
+            /* Mobile responsive adjustments */
+            @media (max-width: 992px) {
+                .main-content {
+                    margin-left: 0;
+                    width: 100%;
+                }
+                
+                .navbar {
+                    left: 0;
+                    width: 100%;
+                }
+            }
+        }
+
+        /* Sidebar - Perfect Match */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--gradient-blue);
+            box-shadow: 3px 0 20px rgba(26, 75, 132, 0.15);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Header - Exact Match */
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-header h3 {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .sidebar-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+
+        /* Sidebar Menu - Perfect Replication */
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 15px;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a i {
+            font-size: 1.2rem;
+            min-width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            transform: translateX(5px);
+        }
+        .sidebar-menu a span {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-menu a.active {
+            background: var(--active-bg);
+            color: var(--text-dark);
+        }
+
+        /* Scrollbar - Exact Match */
+        .sidebar-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Logout Button - Perfect Match */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            color: var(--text-light);
+            border-radius: 12px;
+            border: none;
+            width: 100%;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Collapsed State - Exact Match */
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .sidebar-header h3,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .logout-btn span {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 0;
+        }
+
+        .sidebar.collapsed .sidebar-menu a {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar.collapsed .sidebar-menu a i {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .sidebar.collapsed .logout-btn {
+            padding: 12px;
+        }
+
+        .sidebar.collapsed .logout-btn i {
+            margin: 0;
+        }
+
+        /* Mobile Responsiveness - Perfect Match */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .sidebar-menu a {
+                padding: 10px 15px;
+                margin: 3px 5px;
+            }
+
+            .sidebar-menu a i {
+                font-size: 1.1rem;
+                margin-right: 10px;
+            }
+
+            .sidebar-header {
+                padding: 15px;
+            }
+
+            .sidebar-header img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .sidebar-header h3 {
+                font-size: 1.1rem;
+            }
+
+            .logout-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Dark Mode - Perfect Match */
+        body.dark-mode .sidebar {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        }
+
+        body.dark-mode .sidebar-menu a.active {
+            background: var(--accent-color);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Main Content Container */
+        .main-content {
+            position: relative;
+            margin-left: var(--sidebar-width);
+            margin-top: var(--navbar-height);
+            
+            min-height: calc(100vh - var(--navbar-height));
+            background-color: var(--bg-off-white);
+            transition: margin-left var(--transition-speed) ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        /* Content Wrapper */
+        .content {
+            width: 100%;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            width: 100%;
+            margin: 0 auto;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            transition: all var(--transition-speed) ease;
+            border-top: 5px solid var(--accent-color); /* Adding only top yellow border */
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        /* Dark mode content-wrapper styles */
+        body.dark-mode .content-wrapper {
+            background-color: #1a2234;
+            color: var(--text-light);
+            border-top: 2px solid var(--accent-color); /* Maintaining only top yellow border in dark mode */
+        }
+
+        /* Optional: Add hover effect to make top border more prominent */
+        .content-wrapper:hover {
+            border-top-color: var(--accent-color);
+            box-shadow: 0 -2px 15px rgba(255, 217, 61, 0.3);
+        }
+
+        body.dark-mode .content-wrapper:hover {
+            border-top-color: var(--accent-color);
+            box-shadow: 0 -2px 15px rgba(255, 217, 61, 0.2);
+        }
+
+        /* Dashboard Card Styling */
+        .dashboard-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            height: var(--navbar-height);
+            width: calc(100% - var(--sidebar-width));
+            background: white;
+            padding: 0 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            transition: left var(--transition-speed) ease, width var(--transition-speed) ease;
+        }
+
+        .navbar.collapsed {
+            left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .navbar {
+                left: 0;
+                width: 100%;
+            }
+        }
+
+        /* Main Content Refinements */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--navbar-height);
+           
+            min-height: calc(100vh - var(--navbar-height));
+            background-color: var(--bg-off-white);
+            transition: margin var(--transition-speed) ease;
+        }
+
+        /* Content Wrapper Improvements */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Form Styling */
+        .form-label {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(26, 75, 132, 0.25);
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Alert Styling */
+        .alert {
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .navbar {
+                left: 0;
+                width: 100%;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: var(--navbar-height);
+                padding: 15px;
+            }
+
+            .content-wrapper {
+                padding: 15px;
+            }
+
+            .sidebar.show + .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: var(--card-shadow);
+        }
+
+        .modal-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 15px 20px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Table Styling */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background: var(--bg-off-white);
+            color: var(--text-dark);
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* Add these styles to your existing CSS */
+        .user-profile-btn {
+            display: flex;
+            align-items: center;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .user-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+
+        .dropdown-menu {
+            padding: 8px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            min-width: 200px;
+        }
+
+        .dropdown-header {
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 8px 16px;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(26, 75, 132, 0.1);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .dropdown-divider {
+            margin: 8px 0;
+        }
+
+
+/*Frontend touch*/
+
+.sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+            overflow: hidden; /* Add this to prevent scrolling when collapsed */
+        }
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto; /* Keep only one scrollable container */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        .sidebar.collapsed .sidebar-menu {
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            margin: 0 auto 10px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            display: block;
+        }
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            margin: 0;
+            display: inline-block;
+            vertical-align: middle;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .sidebar.collapsed .sidebar-header h3 {
+            display: none;
+        }
+        .sidebar-menu a {
+            color: var(--text-light);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-menu a i {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            min-width: 20px;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .sidebar.collapsed .sidebar-menu a i {
+            margin-right: 0;
+            font-size: 1.4rem;
+        }
+        
+
+.sidebar-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+    background: rgba(6, 71, 125, 0.1);
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+.sidebar-menu a .link-text {
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .sidebar.collapsed .sidebar-menu a .link-text {
+            opacity: 0;
+            position: absolute;
+            left: 100%;
+            background: var(--secondary-color);
+            padding: 10px;
+            border-radius: 4px;
+            margin-left: 10px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar.collapsed .sidebar-menu a:hover .link-text {
+            opacity: 1;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+          
+            color: rgb(0, 0, 0);
+            transform: translateX(5px);
+        }
+    
+    /* Dark Mode Styles */
+    body.dark-mode {
+        background-color: #1a2234;
+        color: #ffffff !important;  /* Force white text */
+    }
+
+    body.dark-mode .sidebar {
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    }
+
+    body.dark-mode .navbar,
+    bodu.dark-mode .main-content,
+    body.dark-mode .dashboard-card,
+    body.dark-mode .chart-container,
+    body.dark-mode .active-exam-card,
+    body.dark-mode .action-btn {
+        background-color: #243147;
+        color: #e0e0e0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark-mode .card {
+        background-color: #243147;
+        color: var(--text-light);
+    }
+
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: #1a2234;
+        border-color: #364156;
+        color: var(--text-light);
+    }
+
+    body.dark-mode .form-select option {
+        background-color: #1a2234;
+        color: #e0e0e0;
+    }
+    body.dark-mode .main-content {
+        background-color: #1a2234;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .sidebar-menu a.active {
+        color: var(--text-light);
+    }
+
+    body.dark-mode .content,
+    body.dark-mode .content-wrapper {
+        background-color: #1a2234;
+        color: var(--text-light);
+    }
+
+    /* Theme Toggle Button Styles */
+    .theme-toggle {
+        background: var(--gradient-blue);
+        border: none;
+        padding: 12px;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(26, 75, 132, 0.2);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .theme-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26, 75, 132, 0.3);
+    }
+
+    .theme-toggle i {
+        font-size: 1.2rem;
+        color: var(--text-light);
+    }
+
+    body.dark-mode .theme-toggle {
+        background: var(--gradient-blue);
+    }
+
+    /* Make sure the button stays on top of other elements */
+    .theme-toggle {
+        z-index: 9999;
+    }
+
+    /* Particles background in dark mode */
+    body.dark-mode .particles {
+        opacity: 0.3;
+    }
+
+    /* Additional dark mode styles for specific elements */
+    body.dark-mode .card-header {
+        background-color: #2c3a54;
+        border-bottom: 1px solid #364156;
+    }
+
+    body.dark-mode .table {
+        color: var(--text-light);
+    }
+
+    body.dark-mode .table th,
+    body.dark-mode .table td {
+        border-color: #364156;
+    }
+
+    body.dark-mode .modal-content {
+        background-color: #243147;
+        color: var(--text-light);
+    }
+
+    body.dark-mode .modal-header {
+        border-bottom: 1px solid #364156;
+    }
+
+    body.dark-mode .modal-footer {
+        border-top: 1px solid #364156;
+    }
+
+    body.dark-mode .close {
+        color: var(--text-light);
+    }
+    /* Default label styles */
+    label {
+        font-weight: normal;
+        color: var(--text-dark);
+        font-size: 0.8125rem;
+    }
+
+    /* Dark mode label styles */
+    body.dark-mode label {
+        color: #ffffff !important;  /* Force white color for all labels */
+    }
+
+    /* Form group labels in dark mode */
+    body.dark-mode .form-group label,
+    body.dark-mode .form-label,
+    body.dark-mode .col-form-label {
+        color: #ffffff !important;
+    }
+
+    /* Required label styles in dark mode */
+    body.dark-mode .required label,
+    body.dark-mode label.required {
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+
+    /* Custom control labels in dark mode */
+    body.dark-mode .custom-control-label,
+    body.dark-mode .form-check-label {
+        color: #ffffff !important;
+    }
+
+    /* Input group labels in dark mode */
+    body.dark-mode .input-group-text {
+        background-color: #243147;
+        border-color: #364156;
+        color: #ffffff !important;
+    }
+
+    /* File input labels in dark mode */
+    body.dark-mode .custom-file-label {
+        background-color: #243147;
+        border-color: #364156;
+        color: #ffffff !important;
+    }
+
+    /* Select labels in dark mode */
+    body.dark-mode .select-label {
+        color: #ffffff !important;
+    }
+
+    /* Floating labels in dark mode */
+    body.dark-mode .form-floating > label {
+        color: #ffffff !important;
+    }
+
+    /* Help text and small text in dark mode */
+    body.dark-mode .form-text,
+    body.dark-mode .small,
+    body.dark-mode small {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* Validation feedback in dark mode */
+    body.dark-mode .valid-feedback,
+    body.dark-mode .invalid-feedback {
+        color: #ffffff !important;
+    }
+
+    /* Placeholder text in dark mode */
+    body.dark-mode input::placeholder,
+    body.dark-mode textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* Legend elements in dark mode */
+    body.dark-mode legend {
+        color: #ffffff !important;
+    }
+
+    /* Fieldset elements in dark mode */
+    body.dark-mode fieldset {
+        border-color: #364156;
+    }
+
+    /* Description text in dark mode */
+    body.dark-mode .description,
+    body.dark-mode .help-block {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+    /* Add/Update these navbar styles */
+    
+    /* Dark mode navbar styles */
+    body.dark-mode .navbar {
+        background-color: #243147 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .navbar-brand {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .nav-link {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .nav-link:hover {
+        color: #e0e0e0 !important;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .navbar .dropdown-toggle {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .navbar .user-profile-btn {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .navbar .user-name {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode #sidebarToggle {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode #sidebarToggle:hover {
+        color: #e0e0e0 !important;
+    }
+
+    /* User profile button in dark mode */
+    body.dark-mode .user-profile-btn {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .user-profile-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Navbar icons in dark mode */
+    body.dark-mode .navbar i {
+        color: #ffffff !important;
+    }
+
+    /* Search bar in navbar if exists */
+    body.dark-mode .navbar .form-control {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .navbar .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    /* Navbar notifications or badges if exist */
+    body.dark-mode .navbar .badge {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Add this div right after your body tag -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- Add this button right after your <body> tag, before the sidebar -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <button class="theme-toggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="{% static 'faculty/images/user_icon.png' %}" alt="Faculty">
+            <h3>Exam Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="{% url 'faculty_dashboard' %}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="link-text">Dashboard</span>
+            </a>
+            <a href="{% url 'add_course' %}">
+                <i class="fas fa-book"></i>
+                <span class="link-text">Add Course</span>
+            </a>
+            <a href="{% url 'upload_students' %}">
+                <i class="fas fa-users"></i>
+                <span class="link-text">Upload Students</span>
+            </a>
+            <a href="{% url 'upload_questions' %}">
+                <i class="fas fa-file-alt"></i>
+                <span class="link-text">Upload Questions</span>
+            </a>
+            <a href="{% url 'add_exam_specifications' %}"class="active">
+                <i class="fas fa-cog"></i>
+                <span class="link-text">Specifications</span>
+            </a>
+            <a href="{% url 'take_exam' %}">
+                <i class="fas fa-pencil-alt"></i>
+                <span class="link-text">Take Exam</span>
+            </a>
+            <a href="{% url 'view_results' %}">
+                <i class="fas fa-chart-bar"></i>
+                <span class="link-text">View Results</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <a href="{% url 'faculty_logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <button id="sidebarToggle" class="btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-cog"></i>
+            <span>Add Exam Specifications</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" style="padding: 0;" >
+        <div class="content-wrapper" style="width: 100%; margin-top: 30px;" >
+            <div class="form-container"style="padding: 0;">
+                <!-- Message Display -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="dashboard-card">
+                    <h3 class="text-center mb-4">Create Exam</h3>
+                    <form method="POST" id="examForm">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Exam Name:</label>
+                            <input type="text" name="exam_name" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Exam Type:</label>
+                            <select name="exam_type" class="form-select" required>
+                                <option value="periodic">Periodic Test</option>
+                                <option value="final">Final Exam</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Select Course</label>
+                            <select class="form-select" name="course_code" required>
+                                <option value="" selected disabled>Select a course</option>
+                                {% for course in courses %}
+                                <option value="{{ course.code }}">{{ course.name }} ({{ course.code }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Total Marks</label>
+                            <input type="number" class="form-control" id="totalMarks" name="total_marks" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <div id="note" class="note"></div>
+                            <label class="form-label">Total No. of Questions</label>
+                            <input type="number" class="form-control" id="totalQuestions" name="total_questions" required
+                                min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Number of Units</label>
+                            <input type="number" name="num_units" id="num_units" class="form-control" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Marks for Each Unit (comma-separated)</label>
+                            <input type="text" name="marks_per_unit" id="unitMarks" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Maximum Marks for a Question</label>
+                            <input type="number" name="max_mark" id="maxMarks" class="form-control" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Questions Distribution</label>
+                            <div id="markInputsContainer" class="border p-3 rounded"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Exam Duration</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="duration_hours" name="duration_hours" 
+                                               required min="0" max="5" value="1">
+                                        <span class="input-group-text">Hours</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="duration_minutes" name="duration_minutes" 
+                                               required min="0" max="59" value="0">
+                                        <span class="input-group-text">Minutes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="question_sheet" name="question_sheet">
+
+                        <button type="submit" class="btn btn-primary mt-3">Save</button>
+                        <div class="loading" id="loading">Generating... Please wait.</div>
+                    </form>
+
+                    <div id="questionSheet" class="output mt-3"></div>
+                    <p id="warning" class="warning"></p>
+                    <button class="btn btn-danger mt-2" id="retryButton" style="display: none;">Retry</button>
+
+                    {% if specifications %}
+                    <button class="btn btn-primary w-100 mt-4" data-bs-toggle="modal" data-bs-target="#viewSpecificationsModal">
+                        <i class="fas fa-list me-2"></i>View Exam Specifications
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ExamSpecifications Modal -->
+    <div class="modal fade" id="viewSpecificationsModal" tabindex="-1"
+        aria-labelledby="viewSpecificationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewSpecificationsModalLabel">Specifications</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Exam name</th>
+                                    <th>Exam Type</th>
+                                    <th>No. of units</th>
+                                    <th>Total Marks</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for spec in specifications %}
+                                <tr>
+                                    <td>{{ spec.exam_name }}</td>
+                                    <td>{{ spec.exam_type }}</td>
+                                    <td>{{ spec.num_units }}</td>
+                                    <td>{{ spec.total_marks }}</td>
+                                    <td>
+                                        <a href="{% url 'delete_exam_specification' spec.id %}"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to delete?');">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#editSpecificationModal" data-id="{{ spec.id }}"
+                                            data-name="{{ spec.exam_name }}" data-type="{{ spec.exam_type }}"
+                                            data-units="{{ spec.num_units }}" data-marks="{{ spec.total_marks }}"
+                                            data-duration-hours="{{ spec.duration_hours }}"
+                                            data-duration-minutes="{{ spec.duration_minutes }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Truncate Data Button -->
+                    <form action="{% url 'truncate_specifications' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100 mt-3"
+                            onclick="return confirm('Are you sure you want to delete all specifications?');">
+                            <i class="fas fa-trash me-2"></i>Truncate All Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Exam Specifications Modal -->
+    <div class="modal fade" id="editSpecificationModal" tabindex="-1" aria-labelledby="editSpecificationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSpecificationModalLabel">Edit Exam Specification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editSpecificationForm" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="spec_id" id="editSpecId">
+
+                        <div class="mb-3">
+                            <label class="form-label">Exam Name:</label>
+                            <input type="text" name="exam_name" id="editExamName" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Exam Type:</label>
+                            <select name="exam_type" id="editExamType" class="form-select" required>
+                                <option value="periodic">Periodic Test</option>
+                                <option value="final">Final Exam</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Number of Units:</label>
+                            <input type="number" name="num_units" id="editNumUnits" class="form-control" required
+                                min="1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Total Marks:</label>
+                            <input type="number" name="total_marks" id="editTotalMarks" class="form-control"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Exam Duration</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="number" name="duration_hours" id="editDurationHours" 
+                                               class="form-control" required min="0" max="5">
+                                        <span class="input-group-text">Hours</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="number" name="duration_minutes" id="editDurationMinutes" 
+                                               class="form-control" required min="0" max="59">
+                                        <span class="input-group-text">Minutes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Get DOM elements
+        const sidebar = document.querySelector('.sidebar');
+        const content = document.querySelector('.content');
+        const navbar = document.querySelector('.navbar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const overlay = document.querySelector('.sidebar-overlay');
+
+        // Helper function to check if we're in mobile view
+        function isMobile() {
+            return window.innerWidth < 992;
+        }
+
+        // Toggle mobile sidebar
+        function toggleMobileSidebar() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            document.body.classList.toggle('sidebar-open');
+        }
+
+        // Toggle desktop sidebar
+        function toggleDesktopSidebar() {
+            sidebar.classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('expanded');
+            document.querySelector('.navbar').classList.toggle('collapsed');
+            
+            // Store sidebar state in localStorage
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        }
+
+        // Main toggle function
+        function handleSidebarToggle(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (isMobile()) {
+                toggleMobileSidebar();
+            } else {
+                toggleDesktopSidebar();
+            }
+        }
+
+        // Event Listeners
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', handleSidebarToggle);
+        }
+
+        // Close sidebar when clicking overlay
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                if (sidebar.classList.contains('show')) {
+                    toggleMobileSidebar();
+                }
+            });
+        }
+
+        // Handle window resize
+        function handleResize() {
+            if (isMobile()) {
+                // Reset desktop classes in mobile view
+                sidebar.classList.remove('collapsed');
+                content.classList.remove('expanded');
+                navbar.classList.remove('collapsed');
+                
+                // Close mobile sidebar if open
+                if (sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                }
+            } else {
+                // Remove mobile classes
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.classList.remove('sidebar-open');
+                
+                // Restore desktop sidebar state
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                sidebar.classList.toggle('collapsed', isCollapsed);
+                content.classList.toggle('expanded', isCollapsed);
+                navbar.classList.toggle('collapsed', isCollapsed);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved sidebar state on load
+            if (!isMobile() && localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                content.classList.add('expanded');
+                navbar.classList.add('collapsed');
+            }
+            
+            // Initial resize handle
+            handleResize();
+        });
+
+        // Update on window resize
+        window.addEventListener('resize', handleResize);
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = window.innerWidth < 768 ? 15 : 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Resize handler
+        window.addEventListener('resize', function () {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(p => p.remove());
+            createParticles();
+
+            // Auto-show sidebar when switching to desktop
+            if (window.innerWidth >= 768) {
+                document.querySelector('.sidebar').classList.add('show');
+            }
+        });
+
+         // Track dynamically created input fields
+    let markInputs = [];
+
+// Function to create input fields for questions per mark in each unit
+function createMarkInputs() {
+    const numUnits = parseInt(document.getElementById("num_units").value);
+    const maxMarks = parseInt(document.getElementById("maxMarks").value);
+    const unitMarks = document.getElementById("unitMarks").value.split(',').map(Number);
+    
+    // Clear previous inputs
+    const container = document.getElementById("markInputsContainer");
+    container.innerHTML = "";
+    markInputs = [];
+    
+    // Validate inputs
+    if (isNaN(numUnits)) return;
+    if (isNaN(maxMarks)) return;
+    if (unitMarks.length !== numUnits) return;
+
+    // Create inputs for each unit
+    for (let unit = 1; unit <= numUnits; unit++) {
+        const unitDiv = document.createElement("div");
+        unitDiv.className = "unit-mark-inputs mb-3";
+        unitDiv.innerHTML = `<h5>Unit ${unit} (${unitMarks[unit-1]} marks)</h5>`;
+        
+        // Create inputs for each mark value (1 to maxMarks)
+        for (let mark = 1; mark <= maxMarks; mark++) {
+            const inputGroup = document.createElement("div");
+            inputGroup.className = "input-group mb-2";
+            inputGroup.innerHTML = `
+                <span class="input-group-text">${mark} mark questions:</span>
+                <input type="number" class="form-control unit-${unit}-mark-${mark}" 
+                       min="0" value="0" data-unit="${unit}" data-mark="${mark}">
+            `;
+            unitDiv.appendChild(inputGroup);
+        }
+        
+        container.appendChild(unitDiv);
+    }
+}
+
+// Function to generate question sheet based on user inputs
+function generateQuestionSheetFromInputs() {
+    const numUnits = parseInt(document.getElementById("num_units").value);
+    const maxMarks = parseInt(document.getElementById("maxMarks").value);
+    const unitMarks = document.getElementById("unitMarks").value.split(',').map(Number);
+    
+    let questionSheet = [];
+    let warningElement = document.getElementById("warning");
+    warningElement.innerText = "";
+    
+    // Validate totals
+    let totalMarksCalculated = 0;
+    let totalQuestionsCalculated = 0;
+    
+    for (let unit = 1; unit <= numUnits; unit++) {
+        let unitQuestions = [];
+        let unitMarksCalculated = 0;
+        
+        for (let mark = 1; mark <= maxMarks; mark++) {
+            const input = document.querySelector(`.unit-${unit}-mark-${mark}`);
+            const count = parseInt(input.value) || 0;
+            
+            // Add the questions to the unit
+            for (let i = 0; i < count; i++) {
+                unitQuestions.push(mark);
+            }
+            
+            unitMarksCalculated += count * mark;
+            totalQuestionsCalculated += count;
+        }
+        
+        totalMarksCalculated += unitMarksCalculated;
+        
+        // Check if unit marks match the specified value
+        if (unitMarksCalculated !== unitMarks[unit-1]) {
+            warningElement.innerText = `⚠️ Unit ${unit} marks don't add up (${unitMarksCalculated} vs ${unitMarks[unit-1]})`;
+            return null;
+        }
+        
+        questionSheet.push({
+            unit: unit,
+            questions: unitQuestions,
+            totalMarks: unitMarksCalculated
+        });
+    }
+    
+    // Check totals
+    const totalMarks = parseInt(document.getElementById("totalMarks").value);
+    const totalQuestions = parseInt(document.getElementById("totalQuestions").value);
+    
+    if (totalMarksCalculated !== totalMarks) {
+        warningElement.innerText = `⚠️ Total marks don't match (${totalMarksCalculated} vs ${totalMarks})`;
+        return null;
+    }
+    
+    if (totalQuestionsCalculated !== totalQuestions) {
+        warningElement.innerText = `⚠️ Total questions don't match (${totalQuestionsCalculated} vs ${totalQuestions})`;
+        return null;
+    }
+    
+    return questionSheet;
+}
+
+// Modified form submission handler
+document.getElementById("examForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    const questionSheet = generateQuestionSheetFromInputs();
+    const warningElement = document.getElementById("warning");
+    
+    if (questionSheet && warningElement.innerText === "") {
+        // Convert question sheet to a format suitable for hidden input
+        const formattedSheet = questionSheet.map(unit => 
+            `Unit-${unit.unit}: ${unit.questions.join(",")}`
+        ).join("|");
+        
+        document.getElementById("question_sheet").value = formattedSheet;
+        
+        // Display the generated sheet
+        displayQuestionSheet(questionSheet);
+        
+        // Submit the form
+        this.submit();
+    }
+});
+
+// Event listeners for input changes
+document.getElementById("num_units").addEventListener("change", createMarkInputs);
+document.getElementById("maxMarks").addEventListener("change", createMarkInputs);
+document.getElementById("unitMarks").addEventListener("change", createMarkInputs);
+
+// Initialize inputs if values are already set
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("maxMarks").value && 
+        document.getElementById("num_units").value && 
+        document.getElementById("unitMarks").value) {
+        createMarkInputs();
+    }
+});
+
+// Helper function to display the question sheet
+function displayQuestionSheet(sheet) {
+    let questionSheetDiv = document.getElementById("questionSheet");
+    questionSheetDiv.innerHTML = "";
+
+    sheet.forEach(unit => {
+        let unitElement = document.createElement("div");
+        unitElement.className = "unit-container mb-3 p-3 border rounded";
+        unitElement.innerHTML = `
+            <h5>Unit ${unit.unit} (${unit.totalMarks} marks)</h5>
+            <p>Questions: ${unit.questions.join(", ")}</p>
+            <p>Total Questions: ${unit.questions.length}</p>
+        `;
+        questionSheetDiv.appendChild(unitElement);
+    });
+}
+
+        // Edit modal handling
+        $('#editSpecificationModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var specId = button.data('id');
+            var examName = button.data('name');
+            var examType = button.data('type');
+            var numUnits = button.data('units');
+            var totalMarks = button.data('marks');
+            var durationHours = button.data('duration-hours');
+            var durationMinutes = button.data('duration-minutes');
+
+            $('#editSpecId').val(specId);
+            $('#editExamName').val(examName);
+            $('#editExamType').val(examType);
+            $('#editNumUnits').val(numUnits);
+            $('#editTotalMarks').val(totalMarks);
+            $('#editDurationHours').val(durationHours);
+            $('#editDurationMinutes').val(durationMinutes);
+
+            // Update form action URL
+            $('#editSpecificationForm').attr('action', "{% url 'update_specifications' 0 %}".replace("0", specId));
+        });
+
+        // Unit input handling
+        document.getElementById("num_units").addEventListener("input", function () {
+            let unitContainer = document.getElementById("unit_questions");
+            unitContainer.innerHTML = "";
+            let num_units = parseInt(this.value);
+
+            for (let i = 1; i <= num_units; i++) {
+                let div = document.createElement("div");
+                div.classList.add("mb-3");
+                div.innerHTML = `<label class="form-label">Questions in Unit ${i}:</label>
+                     <input type="number" name="unit_${i}" class="form-control" min="1" required>`;
+                unitContainer.appendChild(div);
+            }
+        });
+
+        // Theme Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            // Check for saved theme preference
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                
+                // Update icon and save preference
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

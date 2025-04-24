@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Data</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .progress {
+            height: 20px;
+        }
+        .badge {
+            font-size: 0.9em;
+            padding: 5px 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-3">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-center">Exam Management Dashboard</h2>
+            </div>
+        </div>
+
+        <!-- Active Exams Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-running me-2"></i> Active Exams
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if active_exams %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Exam Name</th>
+                                <th>Course Code</th>
+                                <th>Type</th>
+                                <th>Total Marks</th>
+                                <th>Start Time</th>
+                                <th>Duration</th>
+                                <th>Students</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam in active_exams %}
+                            <tr>
+                                <td>{{ exam.exam_name }}</td>
+                                <td>{{ exam.course_code }}</td>
+                                <td>{{ exam.exam_type }}</td>
+                                <td>{{ exam.total_marks }}</td>
+                                <td>{{ exam.start_time|date:"d M Y H:i" }}</td>
+                                <td>{{ exam.exam_duration_hours }}h {{ exam.exam_duration_minutes }}m</td>
+                                <td>{{ exam.total_students }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'end_exam' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="exam_name" value="{{ exam.exam_name }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">End Exam</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No active exams currently running.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Completed Exams Section -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i> Exam History
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if completed_exams %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Exam Name</th>
+                                <th>Course Code</th>
+                                <th>Type</th>
+                                <th>Start Time</th>
+                                <th>Students</th>
+                                <th>Avg Score</th>
+                                <th>Pass/Fail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam in completed_exams %}
+                            <tr>
+                                <td>{{ exam.exam_name }}</td>
+                                <td>{{ exam.course_code }}</td>
+                                <td>{{ exam.exam_type }}({{ exam.total_marks }})</td>
+                                <td>{{ exam.start_time|date:"d M Y H:i" }}</td>
+                                <td>{{ exam.total_students }}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar {% if exam.avg_score >= 40 %}bg-success{% else %}bg-danger{% endif %}" 
+                                             style="width: {{ exam.avg_score|default:0 }}%">
+                                            {{ exam.avg_score|default:"0"|floatformat:1 }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ exam.pass_count|default:0 }}</span> / 
+                                    <span class="badge bg-danger">{{ exam.fail_count|default:0 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No exam history available.
+                </div>
+                {% endif %}
+
+                <div class="center-btn">
+                    <a href="{% url 'faculty_dashboard' %}" class="btn btn-success">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

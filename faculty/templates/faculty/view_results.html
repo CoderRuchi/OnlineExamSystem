@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Results</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a4b84;
+            --secondary-color: #2d6dad;
+            --accent-color: #ffd93d;
+            --light-yellow: #fff8e6;
+            --gradient-blue: linear-gradient(135deg, #1a4b84 0%, #2d6dad 100%);
+            --text-dark: #1a3b5d;
+            --bg-off-white: #f8f9fa;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-off-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: var(--gradient-blue);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .card-header h2 {
+            font-size: 1.4rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 20px;
+            background: white;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background: var(--light-yellow);
+            color: var(--text-dark);
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+            padding: 12px;
+        }
+
+        .table td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(26, 75, 132, 0.05);
+        }
+
+        .card-footer {
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--secondary-color);
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .center-btn {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        /* Status badges */
+        .badge-attended {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-pending {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .badge-not-attended {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Stats cards */
+        .stats-card {
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-card.attended {
+            background: linear-gradient(135deg, #28a745, #5cb85c);
+            color: white;
+        }
+
+        .stats-card.pending {
+            background: linear-gradient(135deg, #ffc107, #f0ad4e);
+            color: black;
+        }
+
+        .stats-card.not-attended {
+            background: linear-gradient(135deg, #dc3545, #d9534f);
+            color: white;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Search box */
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            color: #6c757d;
+        }
+
+        .search-box {
+            border-radius: 25px;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(26, 75, 132, 0.25);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .card-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .table {
+                font-size: 0.9rem;
+            }
+
+            .stats-card {
+                padding: 10px;
+            }
+
+            .stats-number {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #1a2234;
+            color: #ffffff;
+        }
+        body.dark-mode .page-title{
+            color: white;
+        }
+
+        body.dark-mode .card {
+            background-color: #243147;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .card-header {
+            background-color: #2c3a54;
+            border-bottom: 1px solid #364156;
+            color: #ffffff;
+        }
+
+        body.dark-mode .card-body {
+            background-color: #243147;
+            color: #ffffff;
+        }
+
+        body.dark-mode .card-footer {
+            background-color: #2c3a54;
+            border-top: 1px solid #364156;
+        }
+
+        body.dark-mode .table {
+            color: #ffffff;
+            background-color: #243147;
+        }
+
+        body.dark-mode .table thead th {
+            background-color: #2c3a54;
+            border-color: #364156;
+            color: #ffffff;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+
+        body.dark-mode .table tbody tr {
+            border-color: #364156;
+        }
+
+        body.dark-mode .table tbody td {
+            background-color: #1a2234;
+            border-color: #364156;
+            color: #ffffff;
+        }
+
+        body.dark-mode .table tbody tr:nth-child(even) td {
+            background-color: #1d2639;
+        }
+
+        body.dark-mode .table-hover tbody tr:hover td {
+            background-color: #2c3a54;
+        }
+
+        body.dark-mode .search-box {
+            background-color: #1a2234;
+            border-color: #364156;
+            color: white;
+        }
+
+        body.dark-mode .search-box:focus {
+            border-color: #4a5d7e;
+            box-shadow: 0 0 0 0.25rem rgba(74, 93, 126, 0.25);
+            background-color: #1a2234;
+            color: white;
+        }
+
+        body.dark-mode .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Theme Toggle Button Styles */
+        .theme-toggle {
+            background: var(--gradient-blue);
+            border: none;
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(26, 75, 132, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 75, 132, 0.3);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="back-btn">
+            <a href="{% url 'faculty_dashboard' %}" class="btn btn-success">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+        <h1 class="page-title">Exam Results</h1>
+
+        {% for exam, data in exam_results.items %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-file-alt me-2"></i>{{ exam.exam_name }} (Course: {{ exam.course_code }})</h2>
+                <div class="badge bg-light text-dark">
+                    <i class="fas fa-users me-1"></i> Total Students: {{ data.total_students }}
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Stats Row -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="stats-card attended">
+                            <div class="stats-number">{{ data.attended_count }}</div>
+                            <div class="stats-label">Attended</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card pending">
+                            <div class="stats-number">{{ data.pending_count }}</div>
+                            <div class="stats-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card not-attended">
+                            <div class="stats-number">{{ data.not_attended_count }}</div>
+                            <div class="stats-label">Not Attended</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Box -->
+                <div class="search-container position-relative">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control search-box" placeholder="Search by Roll No or Name..."
+                        style="padding-left: 40px; ::placeholder { color: rgba(255, 255, 255, 0.6); }"
+                        data-exam-id="{{ exam.id }}" onkeyup="searchResults(this)">
+                </div>
+
+                <!-- Results Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-list-ol me-2"></i>Sr. No</th>
+                                <th><i class="fas fa-id-card me-2"></i>Roll No</th>
+                                <th><i class="fas fa-user me-2"></i>Name</th>
+                                <th><i class="fas fa-star me-2"></i>Total Marks</th>
+                                <th><i class="fas fa-check-circle me-2"></i>Obtained Marks</th>
+                                <th><i class="fas fa-percentage me-2"></i>Percentage</th>
+                                <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in data.results %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ result.student.roll_no }}</td>
+                                <td>{{ result.student.name }}</td>
+                                <td>{{ result.total_marks }}</td>
+                                <td>{{ result.obtained_marks }}</td>
+                                <td>{{ result.percentage|floatformat:2 }}%</td>
+                                <td>
+                                    {% if result.status == 'attended' %}
+                                    <span class="badge badge-attended">
+                                        <i class="fas fa-check-circle me-1"></i> Attended
+                                    </span>
+                                    {% elif result.status == 'pending' %}
+                                    <span class="badge badge-pending">
+                                        <i class="fas fa-clock me-1"></i> In Progress
+                                    </span>
+                                    {% else %}
+                                    <span class="badge badge-not-attended">
+                                        <i class="fas fa-times-circle me-1"></i> Not Attended
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="?download=pdf&exam_id={{ exam.id }}" class="btn btn-primary">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="center-btn">
+            <a href="{% url 'faculty_dashboard' %}" class="btn btn-success">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <button class="theme-toggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme Toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeToggle = document.querySelector('.theme-toggle');
+
+            // Check for saved theme preference
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+
+            themeToggle.addEventListener('click', function () {
+                document.body.classList.toggle('dark-mode');
+
+                // Update icon and save preference
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            // Auto-refresh every 30 seconds
+            setTimeout(function () {
+                window.location.reload();
+            }, 30000);
+        });
+
+        // Search function
+        function searchResults(input) {
+            const examId = input.getAttribute('data-exam-id');
+            const searchTerm = input.value.toLowerCase();
+            const table = input.closest('.card').querySelector('tbody');
+            const rows = table.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const rollNo = row.cells[0].textContent.toLowerCase();
+                const name = row.cells[1].textContent.toLowerCase();
+
+                if (rollNo.includes(searchTerm) || name.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <style>
+        :root {
+            --primary-blue: #1a4b84;
+            /* Rich navy blue */
+            --secondary-blue: #2d6dad;
+            /* Vibrant medium blue */
+            --success-color: #4cc9f0;
+            --danger-color: #e25205f4;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Base responsive container */
+        .container {
+            max-width: 1400px;
+            margin: 80px auto 20px;
+            /* Increased top margin from 20px to 80px */
+            padding: 0 15px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .filters select,
+        .filters button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background: white;
+            font-size: 14px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .filters select {
+            min-width: 200px;
+        }
+
+        .filters select:focus,
+        .filters button:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .filters button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+
+        .filters button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            background: white;
+            padding: 12px 20px;
+            margin: 25px 0 15px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        /* Table responsiveness */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        table th,
+        table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark-color);
+            position: sticky;
+            top: 0;
+        }
+
+        table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            display: inline-block;
+        }
+
+        .status.attended {
+            background-color: var(--success-color);
+        }
+
+        .status.not-attended {
+            background-color: var(--danger-color);
+        }
+
+        .status.in-progress {
+            background-color: var(--warning-color);
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d11465;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        /* Responsive styles for different screen sizes */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                padding: 0 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .filters {
+                gap: 0.8rem;
+            }
+
+            .filters select,
+            .filters button {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px auto;
+            }
+
+            .header {
+                padding: 1.2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .filters {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .filters select,
+            .filters button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            /* Table adjustments for tablets */
+            table th,
+            table td {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .status {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            /* Mobile-specific styles */
+            .container {
+                margin-top: 80px;
+                padding: 0 8px;
+            }
+
+            .header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .filters {
+                padding: 0.8rem;
+            }
+
+            /* Make table scrollable horizontally on mobile */
+            .table-container {
+                margin: 0 -8px;
+                border-radius: 0;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            table th,
+            table td {
+                padding: 0.6rem;
+                min-width: 120px;
+                /* Ensure minimum width for content */
+            }
+
+            /* Adjust status badges for mobile */
+            .status {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            /* Adjust buttons for mobile */
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            /* Improve spacing for empty state */
+            .empty-state {
+                padding: 2rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Add smooth scrolling for table container */
+        .table-container {
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-blue) #f0f0f0;
+        }
+
+        .table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-blue);
+            border-radius: 3px;
+        }
+
+        /* Add touch scrolling hint for mobile */
+        @media (max-width: 768px) {
+            .table-container::after {
+                content: '';
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 5px;
+                background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1));
+                pointer-events: none;
+            }
+        }
+
+        /* Improve table row interaction on touch devices */
+        @media (hover: none) {
+            table tr:active {
+                background-color: rgba(45, 109, 173, 0.1);
+            }
+        }
+
+        /* Back button styles */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #1a4b84 0%, #2d6dad 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 75, 132, 0.3);
+            border: none;
+            z-index: 1000;
+            font-weight: 500;
+            font-size: 0.95rem;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 75, 132, 0.4);
+            background: linear-gradient(135deg, #ffd93d 0%, #ffc107 100%);
+            color: #1a3b5d;
+            text-decoration: none;
+        }
+
+        .back-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(26, 75, 132, 0.3);
+        }
+
+        .back-btn i {
+            font-size: 1.1rem;
+            margin-right: 2px;
+        }
+
+        /* Add a subtle glow effect on hover */
+        .back-btn::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a4b84 0%, #2d6dad 100%);
+            z-index: -1000;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-btn:hover::after {
+            opacity: 0.3;
+        }
+
+        /* Adjust for mobile */
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 15px;
+                left: 15px;
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .back-btn i {
+                font-size: 1rem;
+            }
+
+            /* Adjust container padding to prevent overlap */
+            .container {
+                padding-top: 70px;
+            }
+        }
+
+        .search-bar {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input[type="text"] {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .search-bar button {
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-bar a {
+            text-decoration: none;
+        }
+    </style>
+    <!-- Add Font Awesome for the back arrow icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <!-- Add the back button before the container -->
+    <a href="{% url 'faculty_dashboard' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <h1 style="color: white;">Student Dashboard</h1>
+        </div>
+        <!-- Add Search Bar -->
+        <div class="search-bar" style="margin-bottom: 20px;">
+            <form method="GET" action="{% url 'view_student' %}">
+                <input type="text" name="search" placeholder="Search by name, roll no, or branch"
+                    value="{{ search_query }}" style="padding: 8px; width: 400px;">
+                <button type="submit" style="padding: 8px 15px; background-color: #1a4b84; color: white; border: none;">
+                    Search
+                </button>
+                {% if search_query %}
+                <a href="{% url 'view_student' %}" style="margin-left: 10px; color: #1a4b84;">Clear Search</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="filters">
+            <!-- Department Filter -->
+            <select id="departmentFilter">
+                <option value="">All Departments</option>
+                {% for branch in branches %}
+                <option value="{{ branch.0 }}" {% if department_filte == branch.0 %}selected{% endif %}>{{ branch.1 }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!-- Course Filter -->
+            <select id="courseFilter">
+                <option value="">All Courses</option>
+                {% for course in courses %}
+                <option value="{{ course.code }}" {% if course_filter == course.code %}selected{% endif %}>{{ course.name }} ({{ course.code }})
+                </option>
+                {% endfor %}
+            </select>
+
+            <!-- Status Filter -->
+            <select id="statusFilter">
+                <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Status</option>
+                <option value="attended" {% if status_filter == "attended" %}selected{% endif %}>Attended</option>
+                <option value="not-attended" {% if status_filter == "not-attended" %}selected{% endif %}>Not Attended
+                </option>
+                <option value="in-progress" {% if status_filter == "in-progress" %}selected{% endif %}>In Progress
+                </option>
+            </select>
+
+            <!-- Apply Filter Button -->
+            <button onclick="applyFilters()" style="background-color: #1a4b84;">Apply Filters</button>
+        </div>
+
+        <div class="section-header">Student Exam Details</div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sr.no</th>
+                        <th>Department</th>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Registered Course</th>
+                        <th>Status</th>
+                        <th>Exam Start Time</th>
+                        <th>Exam End Time</th>
+                        <th>Time Remaining</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students %}
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ student.branch }}</td>
+                        <td>{{ student.roll_no }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>
+                            {% for course in student.registered_courses.all %}
+                            {{ course.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if student.has_attempted_exam %}
+                            <span class="status attended">Attended</span>
+                            {% elif student.exam_start_time and not student.has_attempted_exam %}
+                            <span class="status in-progress">In Progress</span>
+                            {% else %}
+                            <span class="status not-attended">Not Attended</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ student.exam_start_time|default:"Not Started" }}</td>
+                        <td>{{ student.exam_end_time|default:"-" }}</td>
+                        <td>{{ student.time_remaining }} sec</td>
+                        <td>
+                            {% if not student.has_attempted_exam %}
+                            <button class="btn btn-danger" onclick="forceLogout('{{ student.roll_no }}')">Force
+                                Logout</button>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="empty-state">No students found matching your criteria</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Auto refresh functionality - refresh every 2 seconds
+        function setupAutoRefresh() {
+            setTimeout(function () {
+                // Reload the page while preserving current filters
+                location.reload();
+            }, 10000); // 10000 milliseconds = 10 seconds
+        }
+
+        // Initialize auto refresh when page loads
+        document.addEventListener('DOMContentLoaded', setupAutoRefresh);
+
+        function applyFilters() {
+            // Get selected values from filters
+            const departmentFilter = document.getElementById('departmentFilter').value;
+            const courseFilter = document.getElementById('courseFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const search = '{{ search_query }}';  // Get the current search query
+            // Construct the URL with filter parameters
+            let url = new URL(window.location.href);
+            url.searchParams.set('department', departmentFilter);
+            url.searchParams.set('course', courseFilter);
+            url.searchParams.set('status', statusFilter);
+            if (search) url += `search=${search}&`;
+
+            // Reload the page with the new filters
+            window.location.href = url.toString();
+        }
+
+        function forceLogout(rollNo) {
+            if (confirm(`Are you sure you want to force logout student ${rollNo}?`)) {
+                fetch("{% url 'force_logout' 'ROLLNO_PLACEHOLDER' %}".replace('ROLLNO_PLACEHOLDER', rollNo), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Student ${rollNo} has been logged out successfully.`);
+                            location.reload();
+                        } else {
+                            alert(`Error: ${data.error}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while trying to logout the student.');
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>

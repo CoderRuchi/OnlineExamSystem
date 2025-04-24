@@ -1,0 +1,1023 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Course</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+       :root {
+            --primary-blue: #1a4b84;      /* Rich navy blue */
+            --secondary-blue: #2d6dad;    /* Vibrant medium blue */
+            --accent-blue: #4a90e2;       /* Bright blue */
+            --light-blue: #f0f7ff;        /* Soft light blue */
+            --accent-yellow: #ffd93d;     /* Vibrant yellow */
+            --light-yellow: #fff8e6;      /* Soft light yellow */
+            --gradient-blue: linear-gradient(135deg, #1a4b84 0%, #2d6dad 100%);
+            --gradient-yellow: linear-gradient(135deg, #ffd93d 0%, #ffc107 100%);
+            --text-dark: #1a3b5d;
+            --text-light: #ffffff;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 80px;
+            --navbar-height: 60px;
+            /* Add these new color variables */
+            --bg-off-white: #f8f9fa;
+            --card-off-white: #ffffff;
+            --sidebar-light: #f4f6f8;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-off-white);
+            color: #333;
+            overflow-x: hidden;
+            transition: all var(--transition-speed) ease;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--gradient-blue);
+            box-shadow: 3px 0 20px rgba(26, 75, 132, 0.15);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-header h3 {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 600;
+        }
+        .sidebar-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        a{
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar.collapsed .sidebar-header img {
+            margin: 0 auto;
+            width: 40px;
+            height: 40px;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: 15px 10px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 15px;
+            overflow-y: auto;
+        }
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            border-radius: 12px;
+            border: none;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: #dc3545;
+            transform: translateY(-2px);
+        }
+        .logout-btn i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        .sidebar.collapsed .sidebar-header h3,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .logout-btn span {
+            display: none;
+        }
+
+        /* Sidebar Menu Items */
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            transform: translateX(5px);
+        }
+
+
+        .sidebar-menu a i {
+            font-size: 1.2rem;
+            min-width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a span {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+
+        .sidebar-menu a.active {
+            background: var(--accent-yellow);
+            color: var(--text-dark);
+        }
+
+        .sidebar-menu a.active i {
+            color: var(--text-dark);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        .sidebar.collapsed .sidebar-header h3,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .logout-btn span {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 0;
+        }
+        .sidebar.collapsed .logout-btn {
+            padding: 12px;
+        }
+        .sidebar.collapsed .logout-btn i {
+            margin: 0;
+        }
+
+        .sidebar.collapsed .sidebar-menu a {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar.collapsed .sidebar-menu a i {
+            margin: 0;
+        }
+
+        .sidebar.collapsed .sidebar-header h3,
+        .sidebar.collapsed .sidebar-menu span {
+            display: none;
+        }
+      
+        /* Scrollbar Styling */
+        .sidebar-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 992px) {
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                top: 20px;
+                left: 0;
+                z-index: 1002;
+                background: var(--primary-blue);
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 0 8px 8px 0;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                top: 0;
+                height: 100%;
+                width: 250px;
+                transition: left 0.3s ease;
+                z-index: 1001;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .sidebar.show + .mobile-toggle {
+                left: 250px;
+            }
+
+            .sidebar.show + .mobile-toggle i {
+                transform: rotate(180deg);
+            }
+
+            .sidebar-menu a span {
+                display: inline-block !important;
+                opacity: 1 !important;
+            }
+
+            .sidebar-header h3 {
+                display: block !important;
+                opacity: 1 !important;
+            }
+
+            .content {
+                margin-left: 0 !important;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            margin-top: 60px;
+            background-color: #f2f2f2;
+        }
+
+        .content-wrapper {
+            margin-top: 60px;
+        }
+
+        .content.expanded {
+            margin-left: 60px;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border-top: 5px solid #ffd93d ;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+           
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .card h5 {
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2C3E50;
+        }
+
+        .active-exam-card {
+            border-top: 5px solid #ffd93d ;
+            background-color: #f8f9fa;
+        }
+
+        .active-exam-card h3 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2C3E50;
+        }
+
+        .active-exam-card p {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .active-exam-card .status {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .active-exam-card .btn-danger {
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+        }
+
+        .table {
+            margin-top: 15px;
+        }
+
+        .delete-btn img,
+        .edit-btn img {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover img,
+        .edit-btn:hover img {
+            transform: scale(1.1);
+        }
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn i {
+            margin-right: 10px;
+        }
+
+        .sidebar.collapsed .logout-btn span {
+            display: none;
+        }
+
+        /* Styling for View Courses Modal */
+        .modal-header {
+            background: #ffd93d;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .modal-body {
+            padding: 20px;
+            background-color: #243147;
+        }
+
+        .table th {
+            background: #2d75c8;
+            color: white;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .btn-info {
+            background: #2d75c8;
+            border: none;
+        }
+
+        .btn-info:hover {
+            background: #2d75c8;
+        }
+
+        .chart-container {
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+
+        .list-group-item {
+            background: white;
+            border: none;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gradient-blue);
+            color: var(--text-light);
+            border: none;
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(26, 75, 132, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 75, 132, 0.3);
+        }
+
+        /* Modal Fixes */
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+        
+        .modal {
+            z-index: 1050 !important;
+        }
+        
+        .modal-dialog {
+            pointer-events: auto;
+        }
+        
+        .modal-content * {
+            pointer-events: auto !important;
+        }
+        
+        /* Ensure form elements are interactive */
+        form, input, select, textarea, button {
+            pointer-events: auto !important;
+        }
+        
+        /* Fix for modal click issues */
+        body.modal-open {
+            overflow: auto;
+            padding-right: 0 !important;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode{
+            background-color: #1a2234;
+            color: var(--text-light);
+        }
+        body.dark-mode .sidebar {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        }
+        body.dark-mode .sidebar-menu a.active{
+            color: var(--text-light);
+        }
+
+        body.dark-mode .content,
+        body.dark-mode .content-wrapper {
+            background-color: #1a2234;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .card {
+            background-color: #243147;  /* Updated card background color */
+            color: var(--text-light);
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #1a2234;
+            border-color: #364156;
+            color: var(--text-light);
+        }
+
+        /* Add these styles to your existing <style> section */
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 50%;
+            left: var(--sidebar-width); /* Aligns with the full sidebar width */
+            transform: translateY(-50%);
+            background: var(--primary-blue);
+            color: white;
+            width: 25px;
+            height: 60px;
+            border-radius: 0 5px 5px 0;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 998; /* Just below the sidebar's z-index */
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed + .sidebar-toggle-btn {
+            left: var(--sidebar-collapsed-width); /* Moves with the collapsed sidebar */
+        }
+
+        .sidebar-toggle-btn:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Mobile toggle button styles */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 999;
+            background: var(--primary-blue);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 0 8px 8px 0;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 992px) {
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+            overflow: hidden; /* Add this to prevent scrolling when collapsed */
+        }
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto; /* Keep only one scrollable container */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        .sidebar.collapsed .sidebar-menu {
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            margin: 0 auto 10px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            display: block;
+        }
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            margin: 0;
+            display: inline-block;
+            vertical-align: middle;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .sidebar.collapsed .sidebar-header h3 {
+            display: none;
+        }
+        .sidebar-menu a {
+            color: var(--text-light);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-menu a i {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            min-width: 20px;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .sidebar.collapsed .sidebar-menu a i {
+            margin-right: 0;
+            font-size: 1.4rem;
+        }
+        
+
+.sidebar-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+    background: rgba(6, 71, 125, 0.1);
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+.sidebar-menu a .link-text {
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .sidebar.collapsed .sidebar-menu a .link-text {
+            opacity: 0;
+            position: absolute;
+            left: 100%;
+            background: var(--secondary-color);
+            padding: 10px;
+            border-radius: 4px;
+            margin-left: 10px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar.collapsed .sidebar-menu a:hover .link-text {
+            opacity: 1;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+          
+            color: rgb(0, 0, 0);
+            transform: translateX(5px);
+        }
+        
+
+        
+
+
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle d-lg-none" aria-label="Toggle Mobile Sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" role="navigation">
+        <div class="sidebar-header">
+            <img src="{% static 'faculty/images/user_icon.png' %}" alt="Faculty Profile Picture">
+            <h3>Exam Portal</h3>
+        </div>
+        <div class="sidebar-menu">
+            <a href="{% url 'faculty_dashboard' %}" aria-label="Dashboard">
+                <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+            <a href="{% url 'add_course' %}" class="active" aria-label="Add Course">
+                <i class="fas fa-book"></i><span>Add Course</span>
+            </a>
+            <a href="{% url 'upload_students' %}" aria-label="Upload Students">
+                <i class="fas fa-users"></i><span>Upload Students</span>
+            </a>
+            <a href="{% url 'upload_questions' %}" aria-label="Upload Questions">
+                <i class="fas fa-file-alt"></i><span>Upload Questions</span>
+            </a>
+            <a href="{% url 'add_exam_specifications' %}" aria-label="Specifications">
+                <i class="fas fa-cog"></i><span>Specifications</span>
+            </a>
+            <a href="{% url 'take_exam' %}" aria-label="Take Exam">
+                <i class="fas fa-pencil-alt"></i><span>Take Exam</span>
+            </a>
+            <a href="{% url 'view_results' %}"><i class="fas fa-chart-bar"></i><span>View Results</span></a>
+        </div>
+            <div class="sidebar-footer">
+                <a href="{% url 'faculty_logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Add the toggle button right after the sidebar -->
+    <button class="sidebar-toggle-btn d-none d-lg-flex" id="sidebarToggle" aria-label="Toggle Sidebar">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Main Content -->
+    <div class="content content-wrapper">
+        <!-- Message Display -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        
+        <div class="container">
+            <!-- Add Course Card with Yellow Accent -->
+            <div class="card">
+                <h3 class="text-center mb-4">Add Course</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Course Name:</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Course Code:</label>
+                        <input type="text" name="code" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Year:</label>
+                        <select name="year" class="form-select" required>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Save Course</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Courses Button -->
+        {% if courses %}
+        <button class="btn btn-info w-100 mt-4" data-bs-toggle="modal" data-bs-target="#viewCoursesModal">
+            View Courses 📜
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Courses Modal For Delete -->
+    <div class="modal fade" id="viewCoursesModal" tabindex="-1" aria-labelledby="viewCoursesModalLabel"
+        aria-hidden="true" style="background: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-lg" style="pointer-events: auto;">
+            <div class="modal-content" style="pointer-events: auto;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewCoursesModalLabel">Added Courses</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Course Code</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course.name }}</td>
+                            <td>{{ course.code }}</td>
+                            <td>
+                                <a href="{% url 'delete_course' course.id %}" class="delete-btn"
+                                    onclick="return confirm('Are you sure you want to delete this course?');">
+                                    <img class="h-2" src="{% static 'faculty/images/delete2.png' %}"
+                                        style="width: 20px; height: 20px;"></a>
+                                <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editCourseModal"
+                                    data-id="{{ course.id }}" data-name="{{ course.name }}"
+                                    data-code="{{ course.code }}">
+                                    <img class="h-2" src="{% static 'faculty/images/edit2.png' %}"
+                                        style="width: 20px; height: 20px;">
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+                    <!-- Truncate Data Button -->
+                    <form action="{% url 'truncate_courses' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100 mt-3"
+                            onclick="return confirm('Are you sure you want to delete all courses?');">Truncate All
+                            Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div class="modal fade" id="editCourseModal" tabindex="-1" aria-labelledby="editCourseModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCourseModalLabel">Edit Course</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCourseForm" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="course_id" id="editCourseId">
+
+                        <div class="mb-3">
+                            <label class="form-label">Course Name:</label>
+                            <input type="text" name="name" id="editCourseName" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Course Code:</label>
+                            <input type="text" name="code" id="editCourseCode" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Update Course</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+</div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.querySelector('.theme-toggle');
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        $(document).ready(function () {
+            // Initialize edit buttons
+            $(document).on('click', '.edit-btn', function () {
+                var courseId = $(this).data("id");
+                var courseName = $(this).data("name");
+                var courseCode = $(this).data("code");
+                
+                $("#editCourseId").val(courseId);
+                $("#editCourseName").val(courseName);
+                $("#editCourseCode").val(courseCode);
+            });
+
+            // Handle edit form submission
+            $("#editCourseForm").submit(function (event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: "{% url 'update_course' 0 %}".replace("0", $("#editCourseId").val()),
+                    type: "POST",
+                    data: formData,
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error updating course:", error);
+                    }
+                });
+            });
+
+            // Sidebar toggle functionality
+            $("#sidebarToggle").click(function () {
+                $(".sidebar").toggleClass("collapsed");
+                $(".content").toggleClass("expanded");
+                $(".navbar").toggleClass("collapsed");
+            });
+
+            // Ensure modal content is interactive
+            $('.modal').on('shown.bs.modal', function () {
+                $(this).css('pointer-events', 'auto');
+                $(this).find('.modal-content').css('pointer-events', 'auto');
+            });
+        });
+
+        // Force pointer events for all interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const interactiveElements = [
+                'input', 'select', 'textarea', 'button', 'a', 
+                '[role="button"]', '[tabindex]', 'label'
+            ];
+            
+            interactiveElements.forEach(selector => {
+                document.querySelectorAll(selector).forEach(el => {
+                    el.style.pointerEvents = 'auto';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

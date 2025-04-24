@@ -1,0 +1,258 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Online Examination System</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3c72 50%);
+            color: rgb(3, 43, 77);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay {
+           
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: white;
+            padding: 5px 20px; /* Reduced padding to make the navbar smaller */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1d5ea8 !important;
+            display: flex;
+            align-items: center; /* Aligns logo and text vertically */
+        }
+
+        .navbar .logo {
+            width: 60px; /* Reduced logo size */
+            height: 60px; /* Reduced logo size */
+            margin-right: 10px; /* Reduced margin between logo and text */
+        }
+
+        /* To make sure the navbar items align to the left */
+        .navbar-collapse {
+            justify-content: flex-start; /* Aligns navbar items to the left */
+        }
+
+        .nav-link {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1d5ea8 !important;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .nav-link:hover {
+            color: #144a80 !important;
+        }
+
+        .nav-item {
+            padding-left: 15px;
+        }
+
+        /* About Container */
+        /* About Container */
+        .about-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 70px; /* Adjusted to ensure it doesn't go under the navbar */
+            padding-top: 40px; /* Added padding at the top for better alignment */
+            color: #333;
+            max-width: 1200px;
+            border: 2px solid #062d5a; /* Added border on all sides */
+            border-top-left-radius: 15px; /* Ensures rounded corners */
+            border-top-right-radius: 15px; /* Ensures rounded corners */
+            border-bottom-left-radius: 15px; /* Ensures rounded corners */
+            border-bottom-right-radius: 15px; /* Ensures rounded corners */
+        }
+
+
+        .about-container h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1d5ea8;
+        }
+
+        .about-container h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #1d5ea8;
+        }
+
+        .about-container h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #1d5ea8;
+        }
+
+        .about-container p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .about-container ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .about-container ul li {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .about-container ul li strong {
+            color: #1d5ea8;
+        }
+
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            color: #1d5ea8;
+            font-weight: 500;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            z-index: 1000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Overlay for background -->
+    <div class="overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <img src="{% static 'faculty/images/logo.jpg' %}" alt="Institute Logo" class="logo">
+            <a class="navbar-brand" href="#">Online Examination</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'faculty_login' %}">Admin</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Content -->
+    <div class="content">
+        <div class="about-container">
+            <h2>About Online Examination System</h2>
+            <p>
+                Welcome to the <strong>Online Examination System</strong>, a project developed by the students of <strong>Government Polytechnic Nashik</strong> as part of our academic journey. This platform is designed to provide a seamless and
+                efficient way for students to take exams online, and for faculty to manage exams and results effectively.
+            </p>
+
+            <h2>Our Mission</h2>
+            <p>
+                Our mission is to revolutionize the traditional examination process by leveraging technology to make it more
+                accessible, secure, and user-friendly. We aim to reduce the stress and inefficiencies associated with
+                paper-based exams and provide a modern solution for educational institutions.
+            </p>
+
+            <h2>Features</h2>
+            <ul>
+                <li>📝 <strong>Easy Exam Creation</strong>: Faculty can create and manage exams with ease.</li>
+                <li>⏱️ <strong>Timed Exams</strong>: Students can take exams within a specified time frame.</li>
+                <li>📊 <strong>Instant Results</strong>: Results are generated instantly after exam submission.</li>
+                <li>🔒 <strong>Secure Platform</strong>: Ensures the integrity and security of exams.</li>
+                <li>📱 <strong>Responsive Design</strong>: Accessible on all devices, including desktops, tablets, and mobiles.</li>
+            </ul>
+
+            <h2>Meet the Team</h2>
+            <p>
+                This project was developed by a dedicated team of students from the <strong>Information Technology/Computer Technology</strong>
+                department at <strong>Government Polytechnic Nashik</strong>. We worked collaboratively to design, develop, and deploy
+                this platform as part of our academic project.
+            </p>
+
+            <h3>Team Members</h3>
+            <ul>
+                <li>👨‍💻 <strong>Mansi Sant</strong> - Project Lead & Backend Developer</li>
+                <li>👨‍💻 <strong>Ruchika Vyavahare</strong> - UI/UX Designer and Full Stack Developer</li>
+                <li>👩‍💻 <strong>Piyush Gosavi</strong> - Backend Developer</li>
+                <li>👩‍💻 <strong>Prerna Wagh</strong> - Database Administrator</li>
+                <li>👨‍💻 <strong>Tanisha Kale</strong> - Frontend Developer</li>
+                <li>👨‍💻 <strong>Mayur Kharat</strong> - Frontend Developer</li>
+            </ul>
+
+            <h2>Acknowledgments</h2>
+            <p>
+                We would like to express our gratitude to our professors and mentors for their guidance and support throughout
+                this project. Special thanks to <strong>Prof. Pravin Mali </strong> for their invaluable feedback and
+                encouragement.
+            </p>
+
+            <p>
+                🚀 <strong>Thank you for using the Online Examination System!</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2025 Online Examination System | Built By GPN-ITR Team 🧑‍🎓
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

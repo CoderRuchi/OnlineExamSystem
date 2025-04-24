@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad Request</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to right, #6c757d, #495057);
+            color: #333;
+        }
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 0 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 90%;
+        }
+        .error-code {
+            font-size: 72px;
+            color: #dc3545;
+            margin: 0;
+            font-weight: bold;
+        }
+        .error-message {
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+        }
+        .error-details {
+            font-size: 16px;
+            color: #666;
+            margin: 15px 0;
+            text-align: left;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .error-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .error-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .error-list li:last-child {
+            border-bottom: none;
+        }
+        .back-link {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #dc3545;
+        }
+        .technical-details {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-code">400</h1>
+        <p class="error-message">Bad Request</p>
+        
+        <div class="error-details">
+            <div class="status-indicator"></div>
+            <strong>What happened?</strong>
+            <p>The server could not process your request due to invalid data being sent.</p>
+            
+            <div class="technical-details">
+                <p><strong>Common causes:</strong></p>
+                <ul class="error-list">
+                    <li>• Invalid form submission data</li>
+                    <li>• Malformed JSON in request body</li>
+                    <li>• Missing required fields</li>
+                    <li>• Invalid exam submission format</li>
+                </ul>
+            </div>
+            
+            <p><strong>What can you do?</strong></p>
+            <ul class="error-list">
+                <li>• Check if all required fields are filled correctly</li>
+                <li>• Ensure your exam answers are in the correct format</li>
+                <li>• Try refreshing the page and submitting again</li>
+                <li>• Contact support if the problem persists</li>
+            </ul>
+        </div>
+
+        <div>
+            <a href="javascript:history.back()" class="back-link">Go Back</a>
+            <a href="{% url 'student:student_login' %}" class="back-link" style="margin-left: 10px;">Return to Login</a>
+        </div>
+    </div>
+
+    <script>
+        // Log error details for debugging
+        console.error('Bad Request Error:', {
+            timestamp: new Date().toISOString(),
+            url: window.location.href,
+            referrer: document.referrer
+        });
+    </script>
+</body>
+</html>

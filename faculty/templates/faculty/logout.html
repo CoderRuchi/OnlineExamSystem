@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logged Out | Online Examination System</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1a4b84;
+            --secondary-blue: #2d6dad;
+            --accent-blue: #4a90e2;
+            --light-blue: #f0f7ff;
+            --accent-yellow: #ffd93d;
+            --light-yellow: #fff8e6;
+            --gradient-blue: linear-gradient(135deg, #1a4b84 0%, #2d6dad 100%);
+            --text-dark: #1a3b5d;
+            --text-light: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(26, 75, 132, 0.1);
+            --card-bg: #ffffff;
+            --navbar-bg: #ffffff;
+            --footer-bg: #ffffff;
+            --hover-bg: #f0f7ff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--light-blue);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 10px 15px;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color:   #FFCC00 !important;
+            display: flex;
+            align-items: center;
+            margin-left: -50px;
+        }
+
+        .navbar-brand span {
+            color: #003366;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-blue);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #2c3e50 !important;
+            margin: 0 10px;
+            padding: 8px 15px !important;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db !important;
+        }
+
+
+        /* Logout Container */
+        .logout-container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            width: 100%;
+            max-width: 500px;
+            margin: 120px auto 60px;
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-blue);
+        }
+
+        .logout-container h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-blue);
+            line-height: 1.4;
+        }
+
+        .logout-icon {
+            font-size: 3.5rem;
+            color: var(--secondary-blue);
+            margin-bottom: 25px;
+            animation: pulse 2s infinite;
+            text-shadow: 2px 2px 4px var(--shadow-color);
+            background: var(--light-blue);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        /* Enhanced Button */
+        .btn-custom {
+            background: var(--gradient-blue);
+            color: var(--text-light);
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 75, 132, 0.2);
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: white;
+            color: var(--primary-color);
+            padding:  30px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+            margin-top: 40px;
+            margin-bottom: 0;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        .footer i {
+            color: var(--accent-blue);
+            margin-left: 5px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gradient-blue);
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            border: none;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 75, 132, 0.3);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            --primary-blue: #4a90e2;
+            --secondary-blue: #2d6dad;
+            --accent-blue: #81d4fa;
+            --light-blue: #1a2234;
+            --text-dark: #ffffff;
+            --text-light: #ffffff;
+            --card-bg: #243147;
+            --navbar-bg: rgba(36, 49, 71, 0.95);
+            --footer-bg: rgba(36, 49, 71, 0.95);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --hover-bg: rgba(74, 144, 226, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Success Message Animation */
+        .success-message {
+            position: relative;
+            display: inline-block;
+        }
+
+        .success-message::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-blue);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .logout-container:hover .success-message::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .logout-container {
+                margin: 80px 20px 40px;
+                padding: 30px 20px;
+            }
+
+            .logout-container h1 {
+                font-size: 1.5rem;
+            }
+
+            .navbar-brand span {
+                font-size: 1rem;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .btn-custom {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'faculty/images/logo.jpg' %}" alt="Institute Logo" class="logo">
+                Exam<span>Portal</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'faculty_login' %}">Faculty Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="logout-container">
+            <div class="logout-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="success-message">
+                <h1>You have been successfully logged out</h1>
+            </div>
+            <a href="{% url 'faculty_login' %}" class="btn btn-custom">
+                <i class="fas fa-sign-in-alt"></i>
+                Log in again
+            </a>
+        </div>
+    </div>
+
+    <button class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Online Examination System | Built By GPN-ITR Team <i class="fas fa-graduation-cap"></i></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const themeToggle = document.querySelector('.theme-toggle');
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>

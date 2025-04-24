@@ -1,0 +1,544 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results</title>
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- Add MathJax support -->
+    <script>
+        // Update MathJax configuration to handle more formats
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: { '[+]': ['ams', 'color', 'boldsymbol'] }
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            loader: {
+                load: ['[tex]/ams', '[tex]/color', '[tex]/boldsymbol']
+            },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    MathJax.typesetPromise();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-blue: #004080;
+            --secondary-blue: #004080;
+            --light-blue: rgba(26, 91, 255, 0.1);
+            --accent-yellow: #eabe3a;
+            --light-yellow: #fff8e1;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+            --success-color: #1e8e3e;
+            --error-color: #d93025;
+            --hover-bg: #f1f3f4;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .result-paper {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 40px;
+            padding-top: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--accent-yellow);
+        }
+
+        .college-logo {
+            height: 200px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .college-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            padding-top: 0;
+            background-color: white;
+            border-radius: 8px;
+        }
+
+        .college-name {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(255, 193, 7, 0.2);
+        }
+
+        .exam-subject {
+            color: var(--text-secondary);
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .section-container {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-yellow);
+        }
+
+        .section-container h4 {
+            color: var(--rich-blue);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+            border: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background-color: var(--light-blue);
+            color: var(--rich-blue);
+            font-weight: 600;
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .table tr:hover {
+            background-color: var(--pale-yellow);
+        }
+
+        .table td {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .status-pass, .status-fail {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-pass {
+            background: #00875A;
+            color: white;
+        }
+
+        .status-fail {
+            background: #DE350B;
+            color: white;
+        }
+
+        /* Question status styling */
+        .correct-answer {
+            background-color: rgba(0, 230, 118, 0.1);
+            color: #00875A;
+            font-weight: bold;
+            border-left: 3px solid #00C853;
+        }
+
+        .incorrect-answer {
+            background-color: rgba(255, 61, 87, 0.1);
+            color: #DE350B;
+            font-weight: bold;
+            border-left: 3px solid #FF5252;
+        }
+
+        .not-attempted {
+            background-color: var(--light-yellow);
+            color: var(--rich-blue);
+            font-weight: bold;
+            border-left: 3px solid var(--accent-yellow);
+        }
+        .MathJax {
+            outline: none !important;
+            font-size: 1.1em !important;
+            line-height: 1.4 !important;
+        }
+
+        .MathJax_Display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin: 1em 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .equation-container {
+            padding: 15px;
+            margin: 15px 0;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #004080;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .MathJax_Preview {
+            display: none !important;
+        }
+
+        /* Add specific styling for math in question breakdown */
+        .table td .MathJax {
+            display: inline !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        /* Final submission card styles */
+        .card {
+            background:white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            border: 1px solid var(--accent-yellow);
+        }
+
+        .password-box {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--accent-yellow);
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .password-box:focus {
+            outline: none;
+            box-shadow: 0 0 5px var(--accent-yellow);
+        }
+
+        .submit-btn {
+            background-color: var(--primary-blue);
+            color: var(--accent-yellow);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid var(--accent-yellow);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--accent-yellow);
+            color: var(--rich-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .result-paper {
+                margin: 15px;
+                padding: 15px;
+                padding-top: 0;
+            }
+
+            .college-logo {
+                height: 150px;
+            }
+
+            .college-header {
+                padding: 15px;
+                padding-top: 0;
+            }
+
+            .college-name {
+                font-size: 1.5rem;
+            }
+
+            .exam-subject {
+                font-size: 1.1rem;
+            }
+
+            .section-container {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .section-container h4 {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            /* Table responsive styles */
+            .table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table th,
+            .table td {
+                padding: 8px;
+                font-size: 0.9rem;
+                min-width: 120px;
+            }
+
+            /* Question breakdown table specific styles */
+            .table th:first-child,
+            .table td:first-child {
+                min-width: 200px;
+            }
+
+            /* Status badges */
+            .status-pass,
+            .status-fail {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+
+            /* Answer status styles */
+            .correct-answer,
+            .incorrect-answer,
+            .not-attempted {
+                padding: 4px 6px;
+                font-size: 0.85rem;
+            }
+
+            /* Final submission card */
+            .card {
+                padding: 15px;
+                margin-top: 20px;
+            }
+
+            .password-box {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .submit-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            .result-paper {
+                margin: 10px;
+                padding: 10px;
+            }
+
+            .college-logo {
+                height: 120px;
+            }
+
+            .college-name {
+                font-size: 1.2rem;
+            }
+
+            .exam-subject {
+                font-size: 1rem;
+            }
+
+            .section-container {
+                padding: 10px;
+            }
+
+            .table th,
+            .table td {
+                padding: 6px;
+                font-size: 0.85rem;
+            }
+
+            .status-pass,
+            .status-fail {
+                padding: 3px 6px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .result-paper {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                border: none;
+            }
+
+            .card {
+                display: none;
+            }
+
+            .section-container {
+                page-break-inside: avoid;
+                border-left: none;
+            }
+
+            .table {
+                width: 100%;
+                overflow: visible;
+            }
+        }
+    </style>
+    <script>
+        //Security-  Prevent Going Back to Exam
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
+</head>
+
+<body>
+    <div class="container result-paper">
+        <!-- College Header -->
+        <div class="college-header">
+            <img src="{% static 'student/logo2.jpg' %}" alt="College Logo" class="college-logo">
+            <div class="college-info">
+                <h2 class="college-name">Government Polytechnic Institute, Nashik</h2>
+                <h4>Online Examination Result</h4>
+                <h3 class="exam-subject">Subject: {{ exam.exam_name }}</h3>
+            </div>
+        </div>
+        {% if exam_data.exam_type == "periodic" %}
+        <!-- Student Details -->
+        <div class="section-container">
+            <h4>👤 Student Details</h4>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th width="30%">Name</th>
+                        <td>{{ exam_data.student_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Roll No</th>
+                        <td>{{ exam_data.roll_no }}</td>
+                    </tr>
+                    <tr>
+                        <th>Branch</th>
+                        <td>{{ exam_data.branch }}</td>
+                    </tr>
+                    <tr>
+                        <th>Year</th>
+                        <td>{{ exam_data.year }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Exam Summary -->
+        <div class="section-container">
+            <h4>📊 Exam Summary</h4>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th width="30%">Total Questions</th>
+                        <td>{{ exam_data.total_questions }}</td>
+                    </tr>
+                    <tr>
+                        <th>Attempted Questions</th>
+                        <td>{{ exam_data.attempted_questions }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Marks</th>
+                        <td>{{ exam_data.total_marks }}</td>
+                    </tr>
+                    <tr>
+                        <th>Marks Gained</th>
+                        <td>{{ exam_data.gained_marks }}</td>
+                    </tr>
+                    <tr>
+                        <th>Score Percentage</th>
+                        <td>{{ exam_data.percentage }}%</td>
+                    </tr>
+                    <tr>
+                        <th>Exam Status</th>
+                        <td>
+                            {% if exam_data.percentage >= 40 %}
+                            <span class="status-pass">✅ Passed</span>
+                            {% else %}
+                            <span class="status-fail">❌ Failed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Question Breakdown -->
+        <div class="section-container">
+            <h4>📌 Question Breakdown</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sr.no</th>
+                        <th>Question</th>
+                        <th>Correct Answer</th>
+                        <th>Your Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in exam_data.question_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ q.question_text }}</td>
+                        <td class="correct-answer">{{ q.correct_answer }}</td>
+                        <td class="{% if q.attempted_answer == q.correct_answer %}correct-answer{% elif q.attempted_answer == 'Not Attempted' %}not-attempted{% else %}incorrect-answer{% endif %}">
+                            {{ q.attempted_answer }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% elif exam_data.exam_type == "final" %}
+        <!-- Display Only Confirm Submission for Final Exam -->
+        <h2 class="text-center">🔐 Final Exam Submission</h2>
+        {% endif %}
+
+        <!-- Keep the final submission section as a card -->
+        <div class="card p-3 mt-3">
+            <h4>🔐 Confirm Final Submission</h4>
+            <form method="POST" action="{% url 'student:final_submit' exam.id %}" style="margin-top: 20px;">
+                {% csrf_token %}
+                <label for="password" style="font-weight: bold; display: block; margin-bottom: 5px;">
+                    Enter Password to Submit Exam:
+                </label>
+                <input type="password" name="password" required class="password-box" placeholder="Enter 'gpn' ">
+                <button type="submit" class="submit-btn">Submit Exam</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Typeset the math when the page loads
+            if (window.MathJax) {
+                MathJax.typesetPromise().catch((err) => console.error('MathJax typeset error:', err));
+            }
+        });
+        function redirectToPage() {
+            window.location.href = "exam_result.html";
+        }
+
+    </script>
+</body>
+
+</html>

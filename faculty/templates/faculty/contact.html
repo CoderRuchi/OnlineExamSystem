@@ -1,0 +1,303 @@
+{% load static  %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Online Examination System</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: white;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay {
+            
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: white;
+            padding: 5px 20px; /* Reduced padding to make the navbar smaller */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1d5ea8 !important;
+            display: flex;
+            align-items: center; /* Aligns logo and text vertically */
+        }
+
+        .navbar .logo {
+            width: 60px; /* Reduced logo size */
+            height: 60px; /* Reduced logo size */
+            margin-right: 10px; /* Reduced margin between logo and text */
+        }
+
+        /* To make sure the navbar items align to the left */
+        .navbar-collapse {
+            justify-content: flex-start; /* Aligns navbar items to the left */
+        }
+
+        .nav-link {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1d5ea8 !important;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .nav-link:hover {
+            color: #144a80 !important;
+        }
+
+        .nav-item {
+            padding-left: 15px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 15px;
+        }
+
+        /* Contact Container */
+        .contact-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 70px; /* Adjusted to ensure it doesn't go under the navbar */
+            padding-top: 40px; /* Added padding at the top for better alignment */
+            color: #333;
+            max-width: 1200px;
+            border: 2px solid #062d5a; /* Added border on all sides */
+            border-top-left-radius: 15px; /* Ensures rounded corners */
+            border-top-right-radius: 15px; /* Ensures rounded corners */
+            border-bottom-left-radius: 15px; /* Ensures rounded corners */
+            border-bottom-right-radius: 15px; /* Ensures rounded corners */
+        }
+        .contact-container h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1d5ea8;
+        }
+
+        .contact-container h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #1d5ea8;
+        }
+
+        .contact-container h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #1d5ea8;
+        }
+
+        .contact-container p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .contact-container ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .contact-container ul li {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .contact-container ul li strong {
+            color: #1d5ea8;
+        }
+
+        .contact-container form {
+            margin-top: 20px;
+        }
+
+        .contact-container .form-group {
+            margin-bottom: 15px;
+        }
+
+        .contact-container .form-group label {
+            font-weight: 500;
+            color: #1d5ea8;
+        }
+
+        .contact-container .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+
+        .contact-container .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+        }
+
+        .contact-container .btn-primary {
+            background-color: #28a745;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .contact-container .btn-primary:hover {
+            background-color: #218838;
+        }
+
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            color: #1d5ea8;
+            font-weight: 500;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            z-index: 1000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Overlay for background -->
+    <div class="overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <img src="{% static 'faculty/images/logo.jpg' %}" alt="Institute Logo" class="logo">
+            <a class="navbar-brand" href="#">Online Examination</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'faculty_login' %}">Admin</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Content -->
+    <div class="content">
+        <div class="contact-container">
+            <h1>Contact Us</h1>
+            <p>
+                We’d love to hear from you! Whether you have a question, feedback, or need support, feel free to reach out to us. Our team is here to assist you.
+            </p>
+
+            <h2>Get in Touch</h2>
+            <p>
+                You can contact us via email or phone, or fill out the form below, and we’ll get back to you as soon as possible.
+            </p>
+
+            <h3>Contact Information</h3>
+            <ul>
+                <li>📧 <strong>Email</strong>: <a href="mailto:support@onlineexamsystem.com">support@onlineexamsystem.com</a></li>
+                <li>📞 <strong>Phone</strong>: +91 12345 67890</li>
+                <li>🏫 <strong>Address</strong>: Government Polytechnic Nashik, Nashik, Maharashtra, 422003</li>
+            </ul>
+
+            <h2>Send Us a Message</h2>
+            <form action="#" method="post">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" class="form-control" rows="5" placeholder="Enter your message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+
+            <h2>Follow Us</h2>
+            <p>
+                Stay updated with the latest news and updates by following us on social media:
+            </p>
+            <ul>
+                <li>📘 <strong>Facebook</strong>: <a href="https://facebook.com/onlineexamsystem">Online Examination System</a></li>
+                <li>🐦 <strong>Twitter</strong>: <a href="https://twitter.com/onlineexamsystem">@OnlineExamSystem</a></li>
+                <li>📸 <strong>Instagram</strong>: <a href="https://instagram.com/onlineexamsystem">@OnlineExamSystem</a></li>
+                <li>💼 <strong>LinkedIn</strong>: <a href="https://linkedin.com/company/onlineexamsystem">Online Examination System</a></li>
+            </ul>
+
+            <p>
+                🚀 <strong>We’re here to help!</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2025 Online Examination System | Built By GPN-ITR Team 🧑‍🎓
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

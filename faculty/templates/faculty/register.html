@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Register | Examination Portal</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        /* Page Centering and Background */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            /* background: linear-gradient(135deg, #28a745, #218838); */
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Registration Box */
+        .register-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Title */
+        .register-container h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        /* Form Inputs */
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Password Fields with Icons */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 40px;
+        }
+
+        .password-container .toggle-password {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        .password-container .toggle-password:hover {
+            color: #28a745;
+        }
+
+        /* Button */
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+
+        /* Login Link */
+        .register-container p {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .register-container a {
+            text-decoration: none;
+            color: #28a745;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .register-container a:hover {
+            color: #218838;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 20px;
+            }
+
+            .register-container h2 {
+                font-size: 20px;
+            }
+
+            .form-control {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .btn-primary {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .register-container p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Faculty Register</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input type="email" name="email" class="form-control" placeholder="Email" required>
+        </div>
+        <div class="mb-3">
+            <input type="text" name="username" class="form-control" placeholder="Username" required>
+        </div>
+        <div class="mb-3 password-container">
+            <input type="password" name="password1" id="password1" class="form-control" placeholder="Password" required>
+            <i class="bi bi-eye-slash toggle-password" id="togglePassword1"></i>
+        </div>
+        <div class="mb-3 password-container">
+            <input type="password" name="password2" id="password2" class="form-control" placeholder="Confirm Password" required>
+            <i class="bi bi-eye-slash toggle-password" id="togglePassword2"></i>
+        </div>
+        <button type="submit" class="btn btn-login">Register</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'faculty_login' %}">Login</a></p>
+</div>
+
+<script>
+    // Password visibility toggle for Password 1
+    document.getElementById('togglePassword1').addEventListener('click', function() {
+        let passwordField = document.getElementById('password1');
+        let icon = this;
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        }
+    });
+
+    // Password visibility toggle for Password 2
+    document.getElementById('togglePassword2').addEventListener('click', function() {
+        let passwordField = document.getElementById('password2');
+        let icon = this;
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        }
+    });
+</script>
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        color: var(--dark-color);
+        overflow: hidden;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 10px 15px;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 1.3rem;
+        color:   #FFCC00 !important;
+        display: flex;
+        align-items: center;
+        margin-left: -50px;
+    }
+
+    .navbar-brand span {
+        color: #003366;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+        margin-right: 15px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--secondary-color);
+    }
+
+    .nav-link {
+        font-weight: 500;
+        color: var(--primary-color) !important;
+        margin: 0 10px;
+        padding: 8px 15px !important;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: var(--secondary-color) !important;
+    }
+
+    /* Login Container */
+    .login-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        padding: 40px;
+        margin: 100px auto 50px;
+        max-width: 500px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: fadeInUp 0.6s ease-out;
+        margin-top: 40px;
+        justify-content: space-between;
+        flex: 1;
+    }
+
+    .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, #FFCC00,rgba(0, 51, 102, 0.9) );
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .login-header h3 {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
+
+    .login-header p {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+    }
+
+    /* Form Styles */
+    .form-control {
+        height: 50px;
+        border-radius: 8px;
+        border: 1px solid #dfe6e9;
+        padding: 10px 15px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        background-color: white;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #95a5a6;
+        transition: color 0.3s;
+    }
+
+    .toggle-password:hover {
+        color: var(--secondary-color);
+    }
+
+    .btn-login {
+        background: #003366;
+        color:  #FFCC00;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+        text-decoration: none;
+        margin-top: 15px;
+        margin-left: 150px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-login:hover {
+        background: #003366;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+    }
+
+    .form-footer a {
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .form-footer a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    /* Alert Messages */
+    .alert {
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+    }
+
+    /* Footer Styles */
+    .footer {
+        background-color: white;
+        color: var(--primary-color);
+        padding:  10px 0;
+        text-align: center;
+        font-size: 0.9rem;
+        position: relative;
+        margin-top: 0px;
+        margin-bottom: -20px;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .footer p {
+        margin: 0;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .login-container {
+            padding: 30px;
+            margin: 80px auto 30px;
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+        }
+        
+        .logo {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .login-container {
+            padding: 25px;
+            margin: 70px 15px 30px;
+        }
+        
+        .login-header h3 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+</body>
+</html>
