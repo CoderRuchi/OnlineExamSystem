@@ -1005,14 +1005,14 @@ def preview_exam(request, exam_id):
 # View results view
 @login_required
 @user_passes_test(is_faculty)
-@login_required
-@user_passes_test(is_faculty)
+
 def take_exam(request):
     if not is_faculty(request.user):
         raise PermissionDenied
     
     faculty = request.user.faculty
     exams = ExamSpecification.objects.filter(faculty=faculty).order_by('-id')
+    active_exams = exams.filter(is_active=True)  # Get active exams separately
 
     if request.method == "POST":
         exam_id = request.POST.get("exam_id")
@@ -1025,55 +1025,35 @@ def take_exam(request):
                     messages.error(request, "No course found for this exam!")
                     return redirect("take_exam")
                 
-                # Get ALL students registered for this course
                 students = Student.objects.filter(registered_courses=course)
-                
-                # Check which students already have JSON files
                 exam_directory = os.path.join("C:\\", f"exam_{exam_id}_{exam.exam_name.replace(' ', '_')}")
-                existing_files = []
-                if os.path.exists(exam_directory):
-                    existing_files = [f for f in os.listdir(exam_directory) if f.endswith('.json')]
                 
-                # Separate students who need JSON files
-                students_without_json = [
-                    s for s in students 
-                    if f"{s.roll_no}.json" not in existing_files
-                ]
-                
-                # Generate JSON files only for students who don't have them
-                if students_without_json:
+                if not os.path.exists(exam_directory):
                     try:
-                        # Split students into manually added and others
-                        manually_added_students = [s for s in students_without_json if s.is_manually_added]
-                        other_students = [s for s in students_without_json if not s.is_manually_added]
-                        
-                        # Generate files for manually added students one by one
-                        if manually_added_students:
-                            for student in manually_added_students:
-                                try:
-                                    generate_single_student_json(exam.id, student)
-                                    messages.success(request, f"Generated exam file for manually added student {student.roll_no}")
-                                except Exception as e:
-                                    messages.error(request, f"Error generating file for manually added student {student.roll_no}: {str(e)}")
-                        
-                        # Generate files for other students in bulk
-                        if other_students:
-                            try:
-                                generate_student_json_files(exam.id, other_students)
-                                messages.success(request, f"Generated exam files for {len(other_students)} regular students")
-                            except Exception as e:
-                                messages.error(request, f"Error generating files for regular students: {str(e)}")
-                        
-                    except Exception as e:
-                        messages.error(request, f"Error generating files: {str(e)}")
+                        os.makedirs(exam_directory)
+                    except OSError as e:
+                        messages.error(request, f"Could not create exam directory: {str(e)}")
                         return redirect("take_exam")
                 
-                # Start the exam
+                success_count = 0
+                error_count = 0
+                
+                for student in students:
+                    try:
+                        generate_single_student_json(exam.id, student)
+                        success_count += 1
+                    except Exception as e:
+                        error_count += 1
+                        messages.error(request, f"Error generating file for student {student.roll_no}: {str(e)}")
+                
+                if error_count > 0:
+                    messages.warning(request, f"Successfully generated files for {success_count} students, but failed for {error_count} students")
+                    return redirect("take_exam")
+                
                 exam.is_active = True
                 exam.start_time = now()
                 exam.save()
                 
-                # Create Result records for any new students
                 for student in students:
                     Result.objects.get_or_create(
                         student=student,
@@ -1086,8 +1066,8 @@ def take_exam(request):
                         }
                     )
                 
-                messages.success(request, f"Exam '{exam.exam_name}' has started!")
-                return redirect("faculty_dashboard")
+                messages.success(request, f"Exam '{exam.exam_name}' has started successfully!")
+                return redirect("take_exam")
                 
             except ExamSpecification.DoesNotExist:
                 messages.error(request, "Exam not found or you don't have permission!")
@@ -1096,8 +1076,10 @@ def take_exam(request):
         else:
             messages.error(request, "Please select a valid exam.")
     
-    return render(request, "faculty/take_exam.html", {"exams": exams})
-
+    return render(request, "faculty/take_exam.html", {
+        "exams": exams,
+        "active_exams": active_exams  # Pass active exams separately
+    })
 
 from django.core.exceptions import ObjectDoesNotExist
 

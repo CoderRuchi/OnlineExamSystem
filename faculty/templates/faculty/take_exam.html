@@ -976,7 +976,6 @@
 
     <div class="content">
         <!-- Take Exam Section -->
-        <!-- Take Exam Section -->
         <div class="section">
             <h2>Take Exam</h2>
             <form method="post" id="examForm">
@@ -986,56 +985,58 @@
                     <select id="exam_id" name="exam_id" class="form-control" required>
                         <option value="">-- Select an Exam --</option>
                         {% for exam in exams %}
-                            {% if exam.is_active %}
-                                <option value="{{ exam.id }}" disabled style="color: #6c757d; background-color: #f8f9fa;">
-                                    {{ exam.exam_name }} ({{ exam.course_code }}) - ACTIVE
-                                </option>
-                            {% else %}
-                                <option value="{{ exam.id }}">
-                                    {{ exam.exam_name }} ({{ exam.course_code }})
-                                </option>
-                            {% endif %}
+                        {% if exam.is_active %}
+                        <option value="{{ exam.id }}" disabled style="color: #6c757d; background-color: #f8f9fa;">
+                            {{ exam.exam_name }} ({{ exam.course_code }}) - ACTIVE
+                        </option>
+                        {% else %}
+                        <option value="{{ exam.id }}">
+                            {{ exam.exam_name }} ({{ exam.course_code }})
+                        </option>
+                        {% endif %}
                         {% empty %}
-                            <option value="" disabled>No exams available</option>
+                        <option value="" disabled>No exams available</option>
                         {% endfor %}
                     </select>
                 </div>
                 <button type="submit" name="action" value="start" class="btn btn-primary">Start Exam</button>
             </form>
-            <!-- Exam Status -->
-            <div id="exam_status">
+
+            <!-- Messages Section -->
+            <div id="messages">
                 {% if messages %}
                 {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" role="alert">
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
                     {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endfor %}
                 {% endif %}
             </div>
         </div>
 
-        <!-- Active Exams Section-->
+        <!-- Active Exams Section - Only shown if there are active exams -->
+        <!-- Active Exams Section - Only shown if there are active exams -->
+        {% if active_exams %}
         <div class="section">
             <h3>Active Exams</h3>
             <ul class="list-group">
-                {% for exam in exams %}
-                {% if exam.is_active %}
-                <li>
+                {% for exam in active_exams %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                         <strong>{{ exam.exam_name }}</strong><br>
-                        Started at: {{ exam.start_time }}
+                        Started at: {{ exam.start_time|date:"Y-m-d H:i:s" }}
                     </div>
-                    <!-- End Exam Button -->
-                    <form method="post" action="{% url 'end_exam' %}" style="display: inline;">
+                    <form method="post" action="{% url 'end_exam' %}" class="mb-0">
                         {% csrf_token %}
                         <input type="hidden" name="exam_name" value="{{ exam.exam_name }}">
                         <button type="submit" class="btn btn-danger btn-sm">End Exam</button>
                     </form>
                 </li>
-                {% endif %}
                 {% endfor %}
             </ul>
         </div>
+        {% endif %}
         <div class="button-container">
             <div class="center-btn">
                 <a href="{% url 'faculty_dashboard' %}" class="btn btn-success">Back to dashboard</a>
