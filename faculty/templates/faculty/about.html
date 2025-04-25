@@ -16,36 +16,24 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #1e3c72 50%);
+            background: white;
             color: rgb(3, 43, 77);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .overlay {
-           
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
         }
 
         .content {
-            position: relative;
-            z-index: 1;
             flex: 1;
             padding: 20px;
+            margin-top: 80px; /* Adjusted for fixed navbar */
+            margin-bottom: 40px;
         }
 
         /* Navbar Styles */
         .navbar {
             background-color: white;
-            padding: 5px 20px; /* Reduced padding to make the navbar smaller */
+            padding: 5px 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
             position: fixed;
@@ -55,99 +43,123 @@
         }
 
         .navbar-brand {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #1d5ea8 !important;
             display: flex;
-            align-items: center; /* Aligns logo and text vertically */
+            align-items: center;
         }
 
         .navbar .logo {
-            width: 60px; /* Reduced logo size */
-            height: 60px; /* Reduced logo size */
-            margin-right: 10px; /* Reduced margin between logo and text */
-        }
-
-        /* To make sure the navbar items align to the left */
-        .navbar-collapse {
-            justify-content: flex-start; /* Aligns navbar items to the left */
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
         }
 
         .nav-link {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 500;
             color: #1d5ea8 !important;
             transition: color 0.3s ease-in-out;
+            padding: 8px 12px;
         }
 
         .nav-link:hover {
             color: #144a80 !important;
         }
 
-        .nav-item {
-            padding-left: 15px;
-        }
-
-        /* About Container */
         /* About Container */
         .about-container {
             background: white;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            margin-top: 70px; /* Adjusted to ensure it doesn't go under the navbar */
-            padding-top: 40px; /* Added padding at the top for better alignment */
             color: #333;
             max-width: 1200px;
-            border: 2px solid #062d5a; /* Added border on all sides */
-            border-top-left-radius: 15px; /* Ensures rounded corners */
-            border-top-right-radius: 15px; /* Ensures rounded corners */
-            border-bottom-left-radius: 15px; /* Ensures rounded corners */
-            border-bottom-right-radius: 15px; /* Ensures rounded corners */
+            margin: 0 auto;
+            border: 2px solid #062d5a;
         }
 
-
         .about-container h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: bold;
             margin-bottom: 20px;
             color: #1d5ea8;
         }
 
         .about-container h2 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin-top: 30px;
             margin-bottom: 15px;
             color: #1d5ea8;
+            border-bottom: 2px solid #1d5ea8;
+            padding-bottom: 5px;
         }
 
         .about-container h3 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 500;
-            margin-top: 20px;
+            margin-top: 25px;
             margin-bottom: 10px;
             color: #1d5ea8;
         }
 
         .about-container p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.6;
             margin-bottom: 20px;
         }
 
         .about-container ul {
             list-style-type: none;
-            padding-left: 20px;
+            padding-left: 0;
         }
 
         .about-container ul li {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .about-container ul li:before {
+            content: "•";
+            color: #1d5ea8;
+            font-weight: bold;
+            position: absolute;
+            left: 10px;
         }
 
         .about-container ul li strong {
             color: #1d5ea8;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .team-member {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .team-member i {
+            font-size: 2rem;
+            color: #1d5ea8;
+            margin-bottom: 10px;
         }
 
         /* Footer Styles */
@@ -159,98 +171,183 @@
             font-weight: 500;
             box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            z-index: 1000;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            
+            .navbar .logo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .content {
+                margin-top: 70px;
+                padding: 15px;
+            }
+            
+            .about-container {
+                padding: 20px;
+            }
+            
+            .about-container h1 {
+                font-size: 1.8rem;
+            }
+            
+            .about-container h2 {
+                font-size: 1.5rem;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 6px 8px;
+            }
+            
+            .about-container {
+                padding: 15px;
+            }
+            
+            .about-container h1 {
+                font-size: 1.6rem;
+            }
+            
+            .about-container h2 {
+                font-size: 1.3rem;
+            }
+        }
+        .lead strong{
+            font-size: 1.2rem;
+            font-weight:bold; 
+            color: #1d5ea8;
         }
     </style>
 </head>
 
 <body>
-    <!-- Overlay for background -->
-    <div class="overlay"></div>
-
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <img src="{% static 'faculty/images/logo.jpg' %}" alt="Institute Logo" class="logo">
-            <a class="navbar-brand" href="#">Online Examination</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'faculty/images/logo.jpg' %}" alt="Institute Logo" class="logo">
+                Online Examination
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'faculty_login' %}">Admin</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'about' %}">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- About Content -->
+    <!-- Main Content -->
     <div class="content">
-        <div class="about-container">
-            <h2>About Online Examination System</h2>
-            <p>
-                Welcome to the <strong>Online Examination System</strong>, a project developed by the students of <strong>Government Polytechnic Nashik</strong> as part of our academic journey. This platform is designed to provide a seamless and
-                efficient way for students to take exams online, and for faculty to manage exams and results effectively.
-            </p>
+        <div class="container">
+            <div class="about-container">
+                <h1>About Online Examination System</h1>
+                <p>
+                    Welcome to the <strong>Online Examination System</strong>, a project developed by the students of <strong>Government Polytechnic Nashik</strong> as part of our academic journey. This platform provides a seamless and efficient way for students to take exams online, and for faculty to manage exams and results effectively.
+                </p>
 
-            <h2>Our Mission</h2>
-            <p>
-                Our mission is to revolutionize the traditional examination process by leveraging technology to make it more
-                accessible, secure, and user-friendly. We aim to reduce the stress and inefficiencies associated with
-                paper-based exams and provide a modern solution for educational institutions.
-            </p>
+                <h2>Our Mission</h2>
+                <p>
+                    Our mission is to revolutionize the traditional examination process by leveraging technology to make it more accessible, secure, and user-friendly. We aim to reduce the stress and inefficiencies associated with paper-based exams and provide a modern solution for educational institutions.
+                </p>
 
-            <h2>Features</h2>
-            <ul>
-                <li>📝 <strong>Easy Exam Creation</strong>: Faculty can create and manage exams with ease.</li>
-                <li>⏱️ <strong>Timed Exams</strong>: Students can take exams within a specified time frame.</li>
-                <li>📊 <strong>Instant Results</strong>: Results are generated instantly after exam submission.</li>
-                <li>🔒 <strong>Secure Platform</strong>: Ensures the integrity and security of exams.</li>
-                <li>📱 <strong>Responsive Design</strong>: Accessible on all devices, including desktops, tablets, and mobiles.</li>
-            </ul>
+                <h2>Key Features</h2>
+                <ul>
+                    <li><strong>Easy Exam Creation</strong>: Faculty can create and manage exams with customizable settings.</li>
+                    <li><strong>Timed Exams</strong>: Students complete exams within specified time frames with automatic submission.</li>
+                    <li><strong>Instant Results</strong>: Automated grading provides immediate feedback to students.</li>
+                    <li><strong>Secure Platform</strong>: Robust security measures ensure exam integrity.</li>
+                    <li><strong>Responsive Design</strong>: Fully functional across all devices from desktops to smartphones.</li>
+                    <li><strong>Comprehensive Analytics</strong>: Detailed performance reports for both students and faculty.</li>
+                </ul>
 
-            <h2>Meet the Team</h2>
-            <p>
-                This project was developed by a dedicated team of students from the <strong>Information Technology/Computer Technology</strong>
-                department at <strong>Government Polytechnic Nashik</strong>. We worked collaboratively to design, develop, and deploy
-                this platform as part of our academic project.
-            </p>
+                <h2>Development Team</h2>
+                <p>
+                    This project was developed by a dedicated team of students from the <strong>Information Technology/Computer Technology</strong> department at <strong>Government Polytechnic Nashik</strong> as part of our academic curriculum and practical learning experience.
+                </p>
 
-            <h3>Team Members</h3>
-            <ul>
-                <li>👨‍💻 <strong>Mansi Sant</strong> - Project Lead & Backend Developer</li>
-                <li>👨‍💻 <strong>Ruchika Vyavahare</strong> - UI/UX Designer and Full Stack Developer</li>
-                <li>👩‍💻 <strong>Piyush Gosavi</strong> - Backend Developer</li>
-                <li>👩‍💻 <strong>Prerna Wagh</strong> - Database Administrator</li>
-                <li>👨‍💻 <strong>Tanisha Kale</strong> - Frontend Developer</li>
-                <li>👨‍💻 <strong>Mayur Kharat</strong> - Frontend Developer</li>
-            </ul>
+                <h3>Our Team Members</h3>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <i class="fas fa-user-tie"></i>
+                        <h4>Mansi Sant</h4>
+                        <p>Project Lead & Backend Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-laptop-code"></i>
+                        <h4>Ruchika Vyavahare</h4>
+                        <p>UI/UX Designer & Full Stack Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-server"></i>
+                        <h4>Piyush Gosavi</h4>
+                        <p>Backend Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-database"></i>
+                        <h4>Prerna Wagh</h4>
+                        <p>Database Administrator</p>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-paint-brush"></i>
+                        <h4>Tanisha Kale</h4>
+                        <p>Frontend Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-code"></i>
+                        <h4>Mayur Kharat</h4>
+                        <p>Frontend Developer</p>
+                    </div>
+                </div>
 
-            <h2>Acknowledgments</h2>
-            <p>
-                We would like to express our gratitude to our professors and mentors for their guidance and support throughout
-                this project. Special thanks to <strong>Prof. Pravin Mali </strong> for their invaluable feedback and
-                encouragement.
-            </p>
+                <h2>Acknowledgments</h2>
+                <p>
+                    We extend our sincere gratitude to our professors and mentors for their invaluable guidance throughout this project. Special thanks to:
+                </p>
+                <ul>
+                    <li><strong>Prof. Pravin Mali</strong> for their continuous support and technical guidance</li>
+                    <li>Our department heads for providing the necessary resources</li>
+                    <li>Our fellow students for their feedback during testing phases</li>
+                </ul>
 
-            <p>
-                🚀 <strong>Thank you for using the Online Examination System!</strong>
-            </p>
+                <div class="text-center mt-4">
+                    <p class="lead">
+                        <br>
+                        <strong>Thank you for using the Online Examination System!</strong>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        &copy; 2025 Online Examination System | Built By GPN-ITR Team 🧑‍🎓
-    </div>
+    <footer class="footer">
+        <div class="container">
+            &copy; 2025 Online Examination System | Built By GPN-ITR Team 
+            <span style="color: #1d5ea8;">🧑‍🎓</span>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

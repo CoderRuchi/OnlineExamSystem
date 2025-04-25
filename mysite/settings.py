@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+bq!c=_l^*x(%qgz9ufascbt#vg1&9ke*yl3o5neqho3wley!4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.24.200','localhost','127.0.0.1']
 # ALLOWED_HOSTS = ['192.168.43.87','localhost','127.0.0.1']
@@ -94,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'OnlineExam',  # Your database name
         'USER': 'root',  # Your MySQL username
-        'PASSWORD': 'Admin@12345',  # Your MySQL password
+        'PASSWORD': 'gpn123',  # Your MySQL password
         'HOST': 'localhost',
         'PORT': '3306',
     }

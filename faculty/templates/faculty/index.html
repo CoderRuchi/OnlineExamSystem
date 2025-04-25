@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,8 @@
     <link rel="icon" href="{% static 'faculty/images/favicon.ico' %}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         :root {
@@ -18,8 +20,9 @@
             --dark-blue: #001a33;
             --white: #ffffff;
             --light-gray: #f8f9fa;
+            --base-font-size: 16px;
         }
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             color: var(--primary-blue);
@@ -27,47 +30,83 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
-        
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        /* Layout */
+        .container {
+            padding-left: 15px;
+            padding-right: 15px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
         /* Navbar */
         .navbar {
             background-color: var(--white);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            height: 90px;
+            height: auto;
+            min-height: 70px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
+
         .navbar.scrolled {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .navbar-brand {
-            font-weight: 700;
+            font-weight: 500;
             color: var(--primary-blue) !important;
-            font-size: 1.4rem;
-            transition: transform 0.3s ease;
+            font-weight: bold;
             display: flex;
-            align-items: center;    
+            align-items: center;
+            margin-left: -9rem;
         }
-        
         .navbar-brand:hover {
             transform: translateX(5px);
         }
-        
-        .logo-img {
-            height: 90px;
-            transition: transform 0.3s ease;
+
+        .navbar-brand h2 {
+            margin: 0;
+            font-size: clamp(1rem, 3vw, 2rem);
         }
-        
-        
+
+        .navbar-brand span {
+            font-size: 0.9rem;
+        }
+
+        .logo-img {
+            height: clamp(50px, 5vw, 60px);
+            transition: transform 0.3s ease;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
         .nav-link {
             color: var(--primary-blue) !important;
             font-weight: 500;
-            margin: 0 8px;
+            margin: 0 0.5rem;
             position: relative;
             transition: all 0.3s ease;
+            padding: 0.5rem 0.8rem !important;
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
         }
-        
+
         .nav-link::after {
             content: '';
             position: absolute;
@@ -78,93 +117,110 @@
             background-color: var(--light-blue);
             transition: width 0.3s ease;
         }
-        
+
         .nav-link:hover::after {
             width: 100%;
         }
-        
+
         .nav-link:hover {
             color: var(--light-blue) !important;
         }
-        
+
+        .navbar-toggler {
+            padding: 0.5rem 0.75rem;
+            border: none;
+            outline: none;
+        }
+
         /* Hero Section */
         .hero-section {
             flex: 1;
             display: flex;
             align-items: center;
-            padding: 80px 0;
-            background-color: var(--white);
-            background-image: linear-gradient(rgba(51, 102, 204, 0.7), rgba(60, 67, 122, 0.7)),
-                            url('{% static "faculty/images/backgroundj.jpeg" %}');
-
-            /* Option 2: Professional Dark Blue to Light gradient */
-            background-image: linear-gradient(rgba(0, 51, 102, 0.6), rgba(180, 187, 208, 0.6)),
-                            url('{% static "faculty/images/backgroundj.jpeg" %}');
-
-            /* Option 3: Modern Blue-Gray gradient */
+            justify-content: center;
+            padding: 6rem 0;
             background-image: linear-gradient(rgba(41, 128, 185, 0.65), rgba(64, 67, 88, 0.65)),
-                            url('{% static "faculty/images/backgroundj.jpeg" %}');
+                url('{% static "faculty/images/backgroundj.jpeg" %}');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
             color: white;
-        }
-        
-        .hero-content {
+            min-height: calc(100vh - 70px);
+            max-height: 1200px;
             width: 100%;
+        }
+
+        .hero-content {
+            width: 90%;
+            max-width: 1200px;
             text-align: center;
+            padding: 0 1rem;
+            margin: 0 auto;
         }
-        
+
         .main-title {
-            font-size: 2.8rem;
-            font-weight: 700;
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            font-weight: 1000;
             margin-bottom: 1.5rem;
-            /* color: var(--white); */
-            color: rgb(255, 255, 254);
-            animation: fadeInDown 0.8s ease-out;
-        }
-        
-        .institution-name {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
             color: var(--white);
-            animation: fadeIn 1s ease-out 0.3s both;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            animation: fadeInDown 0.8s ease-out;
+            line-height: 1.2;
         }
-        
+
+        .tag-line {
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: white;
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease-out 0.3s both;
+            line-height: 1.3;
+            padding: 0 1rem;
+        }
+
         .lead-text {
-            font-size: 1.2rem;
-            margin-bottom: 3rem;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            margin-bottom: 2.5rem;
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
-            font-weight: 900;
+            font-weight: 500;
             color: var(--white);
             animation: fadeIn 1s ease-out 0.6s both;
+            padding: 0 1rem;
         }
-        
+
         /* Login Button */
         .btn-login {
             background-color: var(--accent-yellow);
             color: var(--primary-blue);
             font-weight: 600;
-            padding: 12px 35px;
+            padding: clamp(0.6rem, 2vw, 0.75rem) clamp(1.5rem, 4vw, 2rem);
             border-radius: 5px;
             border: none;
             transition: all 0.3s;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
             animation: fadeInUp 0.8s ease-out 0.9s both;
             position: relative;
             overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            min-width: 150px;
         }
-        
+
         .btn-login:hover {
             background-color: #e6b800;
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
             color: var(--primary-blue);
         }
-        
+
         .btn-login::after {
             content: '';
             position: absolute;
@@ -172,36 +228,42 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
             transition: 0.5s;
         }
-        
+
         .btn-login:hover::after {
             left: 100%;
         }
-        
+
+        .btn-login i {
+            margin-right: 0.5rem;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+        }
+
         /* Footer */
         .footer {
             background-color: var(--primary-blue);
-            padding: 0.5rem 0;
+            padding: 0.75rem 0;
             color: var(--white);
             transition: all 0.3s ease;
+            text-align: center;
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            font-weight: 500;
+            width: 100%;
         }
-        
+
         .footer:hover {
             background-color: var(--dark-blue);
         }
-        
+
         .footer p {
             margin-bottom: 0;
             transition: transform 0.3s ease;
+            padding: 0 1rem;
         }
-        
-        .footer:hover p {
-            transform: scale(1.02);
-        }
-        
-        /* Custom Animations */
+
+        /* Animations */
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -212,7 +274,7 @@
                 transform: translateY(0);
             }
         }
-        
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -223,60 +285,119 @@
                 transform: translateY(0);
             }
         }
-        
-        /* Responsive Adjustments */
-        @media (max-width: 992px) {
-            .main-title {
-                font-size: 2.2rem;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
-            
-            .institution-name {
-                font-size: 1.5rem;
-            }
-            
-            .lead-text {
-                font-size: 1.1rem;
+            to {
+                opacity: 1;
             }
         }
-        
-        @media (max-width: 768px) {
-            .main-title {
-                font-size: 1.8rem;
+
+        /* Responsive Adjustments */
+        @media (max-width: 1199.98px) {
+            .hero-content {
+                width: 95%;
             }
-            
-            .institution-name {
-                font-size: 1.3rem;
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar {
+                padding: 0.5rem 0;
             }
-            
+            .navbar-collapse {
+                padding-top: 1rem;
+                background-color: var(--white);
+                border-radius: 0 0 10px 10px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            .nav-link {
+                margin: 0.25rem 0;
+                padding: 0.5rem 1rem !important;
+            }
+            .hero-section {
+                padding: 3rem 0;
+                background-attachment: scroll;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .navbar-brand {
+                flex-direction: row;
+            }
+            .hero-section {
+                padding: 2rem 0;
+                min-height: 80vh;
+            }
             .lead-text {
-                font-size: 1rem;
                 margin-bottom: 2rem;
             }
-            
-            .btn-login {
-                padding: 10px 25px;
-            }
-            
             /* Reduce animation intensity on mobile */
-            .main-title, .institution-name, .lead-text, .btn-login {
+            .main-title,
+            .tag-line,
+            .lead-text,
+            .btn-login {
                 animation: fadeIn 0.8s ease-out !important;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .navbar-brand h2 {
+                font-size: 1.1rem;
+            }
+            .logo-img {
+                height: 35px;
+                margin-right: 8px;
+            }
+            .hero-section {
+                padding: 1.5rem 0;
+            }
+            .main-title {
+                margin-bottom: 1rem;
+            }
+            .tag-line {
+                margin-bottom: 1.5rem;
+            }
+            .footer {
+                padding: 0.5rem 0;
+            }
+            .btn-login {
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .navbar-brand h2 {
+                font-size: 0.9rem;
+            }
+            .logo-img {
+                height: 30px;
+            }
+            .main-title {
+                font-size: 1.5rem;
+            }
+            .tag-line {
+                font-size: 1rem;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container" style="margin-left: 10px;">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'faculty/images/logo.jpg' %}" alt="College Logo" class="logo-img">
-               <h2 style = "font-weight: bold;" > Government Polytechnic Nashik   </h2>
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="{% static 'faculty/images/logo.jpg' %}" alt="College Logo" class="logo-img me-2">
+                <h2 class="mb-0">Government Polytechnic Nashik</h2>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto"style = "margin-right: -350px;" >
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'index' %}">Home</a>
                     </li>
@@ -299,11 +420,8 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="main-title">Online Examination System</h1>
-                <h2 class="institution-name">Where Exams Meet Excellence</h2>
-                <p class="lead-text">
-                    A secure, intuitive platform designed to streamline online exams.
-Empowering educators and students with reliability and ease.
-                </p>
+                <h2 class="tag-line">" Where Exams Meet Excellence "</h2>
+                <br><br>
                 <div>
                     <a href="{% url 'student:student_login' %}" class="btn btn-login">
                         <i class="fas fa-sign-in-alt me-2"></i> Student Login
@@ -315,15 +433,16 @@ Empowering educators and students with reliability and ease.
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container text-center">
-            <p>&copy; 2025 Online Examination System | Developed by GPN-ITR Faculty Team</p>
+        <div class="container">
+            <p>&copy; 2025 Online Examination System | Developed by GPN-ITR Faculty Team 🧑‍🎓</p>
+            
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Navbar scroll effect
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 10) {
                 navbar.classList.add('scrolled');
@@ -331,191 +450,28 @@ Empowering educators and students with reliability and ease.
                 navbar.classList.remove('scrolled');
             }
         });
-        
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+
+        // Adjust hero section height based on viewport
+        function adjustHeroHeight() {
+            const navbar = document.querySelector('.navbar');
+            const heroSection = document.querySelector('.hero-section');
+            const navbarHeight = navbar.offsetHeight;
+            const viewportHeight = window.innerHeight;
+
+            heroSection.style.minHeight = `${viewportHeight - navbarHeight}px`;
+        }
+
+        // Run on load and resize
+        window.addEventListener('load', adjustHeroHeight);
+        window.addEventListener('resize', adjustHeroHeight);
+
+        // Initialize Bootstrap tooltips if needed
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
-        // Add to the <script> section
-function adjustFontSizes() {
-    const baseFontSize = Math.max(14, Math.min(16, window.innerWidth / 100)); // Base size between 14px and 16px
-    document.documentElement.style.setProperty('--base-font-size', `${baseFontSize}px`);
-    
-    // Adjust specific elements
-    const mainTitle = document.querySelector('.main-title');
-    const institutionName = document.querySelector('.institution-name');
-    const leadText = document.querySelector('.lead-text');
-    
-    mainTitle.style.fontSize = `clamp(1.8rem, ${baseFontSize * 0.18}vw, 2.8rem)`;
-    institutionName.style.fontSize = `clamp(1.3rem, ${baseFontSize * 0.12}vw, 1.8rem)`;
-    leadText.style.fontSize = `clamp(1rem, ${baseFontSize * 0.08}vw, 1.2rem)`;
-}
-
-// Run on load and resize
-window.addEventListener('load', adjustFontSizes);
-window.addEventListener('resize', adjustFontSizes);
-// Add to the <script> section
-    function adjustHeroSection() {
-    const heroSection = document.querySelector('.hero-section');
-    const windowHeight = window.innerHeight;
-    const navbarHeight = document.querySelector('.navbar').offsetHeight;
-    
-    // Set hero section height to fill available space minus navbar
-    heroSection.style.minHeight = `${windowHeight - navbarHeight}px`;
-    
-    // Adjust padding for smaller screens
-    if (window.innerWidth < 768) {
-        heroSection.style.padding = '40px 0';
-    } else {
-        heroSection.style.padding = '80px 0';
-    }
-}
-
-// Run on load and resize
-window.addEventListener('load', adjustHeroSection);
-window.addEventListener('resize', adjustHeroSection);
-// Add to the <script> section
-    function adjustNavbar() {
-    const logoImg = document.querySelector('.logo-img');
-    const navLinks = document.querySelectorAll('.nav-link');
-    const navbarNav = document.querySelector('.navbar-nav');
-    
-    if (window.innerWidth < 768) {
-        logoImg.style.height = '60px'; // Smaller logo on mobile
-        navLinks.forEach(link => {
-            link.style.margin = '0 5px'; // Reduced spacing
-        });
-        navbarNav.style.marginRight = '0'; // Reset margin on mobile
-    } else if (window.innerWidth < 1200) {
-        logoImg.style.height = '75px'; // Medium logo on tablets
-        navLinks.forEach(link => {
-            link.style.margin = '0 6px';
-        });
-        navbarNav.style.marginRight = '-100px'; // Adjusted for tablets
-    } else {
-        logoImg.style.height = '90px'; // Full size on desktop
-        navLinks.forEach(link => {
-            link.style.margin = '0 8px';
-        });
-        navbarNav.style.marginRight = '-350px'; // Original margin
-    }
-}
-
-// Run on load and resize
-window.addEventListener('load', adjustNavbar);
-window.addEventListener('resize', adjustNavbar);
-// Add to the <script> section
-    function adjustBackgroundImage() {
-    const heroSection = document.querySelector('.hero-section');
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    
-    if (aspectRatio > 2) { // Ultra-wide screens (e.g., 21:9)
-        heroSection.style.backgroundSize = 'cover';
-        heroSection.style.backgroundPosition = 'center 20%'; // Focus on upper-center
-    } else if (aspectRatio < 1) { // Tall screens (e.g., mobile portrait)
-        heroSection.style.backgroundSize = 'cover';
-        heroSection.style.backgroundPosition = 'center 50%'; // Center focus
-    } else { // Standard screens (e.g., 16:9, 4:3)
-        heroSection.style.backgroundSize = 'cover';
-        heroSection.style.backgroundPosition = 'center center';
-    }
-}
-
-// Run on load and resize
-window.addEventListener('load', adjustBackgroundImage);
-window.addEventListener('resize', adjustBackgroundImage);
-// Add to the <script> section
-    function adjustContentSpacing() {
-    const btnLogin = document.querySelector('.btn-login');
-    const heroContent = document.querySelector('.hero-content');
-    const footer = document.querySelector('.footer');
-    
-    if (window.innerWidth < 576) {
-        btnLogin.style.padding = '8px 20px';
-        btnLogin.style.fontSize = '0.9rem';
-        heroContent.style.padding = '0 15px';
-        footer.style.padding = '0.3rem 0';
-    } else if (window.innerWidth < 992) {
-        btnLogin.style.padding = '10px 25px';
-        btnLogin.style.fontSize = '1rem';
-        heroContent.style.padding = '0 20px';
-        footer.style.padding = '0.4rem 0';
-    } else {
-        btnLogin.style.padding = '12px 35px';
-        btnLogin.style.fontSize = '1.1rem';
-        heroContent.style.padding = '0 30px';
-        footer.style.padding = '0.5rem 0';
-    }
-}
-
-// Run on load and resize
-window.addEventListener('load', adjustContentSpacing);
-window.addEventListener('resize', adjustContentSpacing);
     </script>
-    <style>
-        /* Ensure container padding adjusts */
-.container {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-/* Prevent overflow on small screens */
-@media (max-width: 576px) {
-    .container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
-
-/* Adjust navbar toggler for small screens */
-.navbar-toggler {
-    padding: 5px 10px;
-}
-:root {
-    --base-font-size: 16px;
-}
-
-.main-title, .institution-name, .lead-text {
-    transition: font-size 0.3s ease;
-}
-
-/* Ensure images are responsive */
-img {
-    max-width: 100%;
-    height: auto;
-}
-        .btn-login, .hero-content, .footer {
-    transition: padding 0.3s ease, font-size 0.3s ease;
-}
-        .hero-section {
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    transition: background-position 0.3s ease;
-}
-        .logo-img, .nav-link, .navbar-nav {
-    transition: all 0.3s ease;
-}
-        .hero-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center horizontally */
-    padding: 80px 0;
-    background-image: linear-gradient(rgba(41, 128, 185, 0.65), rgba(64, 67, 88, 0.65)),
-                      url('{% static "faculty/images/backgroundj.jpeg" %}');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    min-height: 500px; /* Fallback */
-    max-height: 90vh; /* Prevent excessive height on tall screens */
-    transition: padding 0.3s ease;
-}
-    </style>
 </body>
 </html>
