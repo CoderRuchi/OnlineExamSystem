@@ -1240,10 +1240,26 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.styles import getSampleStyleSheet # type: ignore
 from .models import Result, ExamSpecification
-
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.db.models import Q, Avg,Min,Max
+from django.urls import reverse
+from django.utils import timezone
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+import json
+import os
+from io import BytesIO
+import pandas as pd
+from .models import ExamSpecification, Course, Student, Result
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
 # Add course view
 @login_required
 @user_passes_test(is_faculty, login_url='/faculty_login/')
+
 def view_results(request):
     # Fetch all exams
     exams = ExamSpecification.objects.all().order_by('id')
@@ -1324,48 +1340,169 @@ def view_results(request):
             'attended_count': attended_count,
             'pending_count': pending_count,
             'not_attended_count': not_attended_count,
-            'course_name': course.name if course else exam.course_code
+            'course_name': course.name if course else exam.course_code,
+            'course_code': exam.course_code,
+            'branch': course.branch if hasattr(course, 'branch') else "N/A",
+            'year': course.year if course else "N/A"
         }
-    # If the 'download' parameter is present, generate and return the PDF for a specific exam
-    if request.GET.get("download") == "pdf":
+
+    # Handle download requests
+    if request.GET.get("download"):
         exam_id = request.GET.get("exam_id")
-        if exam_id:
-            try:
-                exam = ExamSpecification.objects.get(id=exam_id)
-                results = Result.objects.filter(exam=exam).order_by('-submitted_at')
+        if not exam_id:
+            return HttpResponse("Exam ID not provided.", status=400)
+        
+        try:
+            exam = ExamSpecification.objects.get(id=exam_id)
+            course = Course.objects.get(code=exam.course_code)
+            results = Result.objects.filter(exam=exam).order_by('student__roll_no')
+            
+            if not results.exists():
+                return HttpResponse("No results found for this exam.", status=404)
+            if request.GET.get("download") == "excel":
+                # Prepare data for Excel
+                data = {
+                    'Sr.No': [],
+                    'Roll No': [],
+                    'Name': [],
+                    'Total Marks': [],
+                    'Obtained Marks': [],
+                    'Percentage': []
+                }
+                
+                for idx, result in enumerate(results, start=1):
+                    data['Sr.No'].append(idx)
+                    data['Roll No'].append(result.student.roll_no)
+                    data['Name'].append(result.student.name)
+                    data['Total Marks'].append(result.total_marks)
+                    data['Obtained Marks'].append(result.obtained_marks)
+                    data['Percentage'].append(f"{result.percentage:.2f}%")
+                
+                # Create DataFrame
+                df = pd.DataFrame(data)
+                output = BytesIO()
+                writer = pd.ExcelWriter(output, engine='xlsxwriter')
+                
+                # Write to Excel
+                df.to_excel(writer, sheet_name='Results', index=False, startrow=4)  # Start at row 4
+                
+                # Get workbook and worksheet objects
+                workbook = writer.book
+                worksheet = writer.sheets['Results']
+                
+                # Header information (Branch, Course Name, Course Code, Exam Name)
+                header_info = [
+                    ["Branch:", result.student.branch if results.exists() else "N/A"],
+                    ["Course Name:", course.name],
+                    ["Course Code:", course.code],
+                    ["Exam Name:", exam.exam_name]
+                ]
+                
+                # Format for header information
+                info_format = workbook.add_format({
+                    'bold': True,
+                    'align': 'left',
+                    'valign': 'vcenter',
+                    'font_size': 11
+                })
+                
+                # Write header information
+                for row_num, (label, value) in enumerate(header_info, start=0):
+                    worksheet.write(row_num, 0, label, info_format)
+                    worksheet.write(row_num, 1, value, info_format)
+                
+                # Format for column headers
+                header_format = workbook.add_format({
+                    'bold': True,
+                    'text_wrap': True,
+                    'valign': 'top',
+                    'fg_color': '#D7E4BC',
+                    'border': 1
+                })
+                
+                # Apply header format to column headers (row 4)
+                for col_num, value in enumerate(df.columns.values):
+                    worksheet.write(4, col_num, value, header_format)
+                
+                # Format for data rows
+                data_format = workbook.add_format({
+                    'align': 'center',
+                    'valign': 'vcenter'
+                })
+                
+                # Apply data format to all data cells
+                worksheet.set_column(0, len(df.columns)-1, None, data_format)
+                
+                # Auto-adjust columns' width
+                for i, col in enumerate(df.columns):
+                    max_len = max(df[col].astype(str).map(len).max(), len(col)) + 2
+                    worksheet.set_column(i, i, max_len)
+                
+                # Freeze the header row
+                worksheet.freeze_panes(5, 0)  # Freeze row 5 (first data row)
+                
+                writer.close()
+                output.seek(0)
+                
+                response = HttpResponse(
+                    output.getvalue(),
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = f'attachment; filename="{course.code}_{exam.exam_name}_results.xlsx"'
+                return response
 
+            # PDF Download
+            elif request.GET.get("download") == "pdf":
                 response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = f'attachment; filename="exam_results_{exam.exam_name}.pdf"'
+                response['Content-Disposition'] = f'attachment; filename="{course.code}_{exam.exam_name}_results.pdf"'
 
-                # Create a PDF document
+                # Create PDF document
                 pdf = SimpleDocTemplate(response, pagesize=letter)
                 elements = []
 
-                # 🔹 Add Title
+                # Styles
                 styles = getSampleStyleSheet()
                 title = Paragraph(f"<b><font size=16>Exam Results Report: {exam.exam_name} (Course: {exam.course_code})</font></b>", styles['Title'])
                 elements.append(title)
                 elements.append(Spacer(1, 12))  # Add space below title
 
-                # Table header
-                data = [
-                    ["Roll No", "Name", "Total Marks", "Obtained Marks", "Percentage"]  # Table Headings
+                # Header Information Table (4 rows)
+                header_data = [
+                    ["Branch:", student.branch if student else "N/A"],
+                    ["Course Name:", course.name],
+                    ["Course Code:", course.code],
+                    ["Exam Name:", exam.exam_name]
                 ]
+                
+                header_table = Table(header_data, colWidths=[120, '*'])  # '*' takes remaining width
+                header_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 11),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 3),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ]))
+                elements.append(header_table)
+                elements.append(Spacer(1, 24))  # Add space before results table
 
-                # Add data rows for this exam
-                for result in results:
-                    data.append([
+                # Results Table
+                results_data = [
+                    ["Sr.No", "Roll No", "Name", "Total Marks", "Obtained Marks"]
+                ]
+                
+                for idx, result in enumerate(results, start=1):
+                    results_data.append([
+                        str(idx),
                         result.student.roll_no,
-                        result.student.name,
-                        result.total_marks,
-                        result.obtained_marks,
-                        f"{result.percentage:.2f}%",
+                        result.student.name.upper(),  # Uppercase names as in example
+                        str(exam.total_marks),  # Using exam's total marks
+                        str(result.obtained_marks),
                     ])
 
-                # Create the table
-                table = Table(data)
-
-                # Apply table styles
+                # Create the table with adjusted column widths
+                table = Table(results_data)
                 style = TableStyle([
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align all text
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Bold header
@@ -1375,17 +1512,18 @@ def view_results(request):
                     ('GRID', (0, 0), (-1, -1), 1, colors.black)  # Table grid lines
                 ])
                 table.setStyle(style)
-
                 elements.append(table)
-                pdf.build(elements)  # Build and generate the PDF
-                return response  # Return the generated PDF
-            except ExamSpecification.DoesNotExist:
-                return HttpResponse("Exam not found.", status=404)
 
-    # If not downloading PDF, render the HTML template
+                pdf.build(elements)
+                return response
+
+
+        except ExamSpecification.DoesNotExist:
+            return HttpResponse("Exam not found.", status=404)
+        except Course.DoesNotExist:
+            return HttpResponse("Course not found.", status=404)
+
     return render(request, 'faculty/view_results.html', {'exam_results': exam_results})
-
-
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET

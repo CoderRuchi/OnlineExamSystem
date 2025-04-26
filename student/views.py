@@ -481,11 +481,15 @@ def submit_exam(request):
                     status=status
                 )
 
-            # Save the result JSON file
-            folder_path = "C:/Data/"
-            os.makedirs(folder_path, exist_ok=True)
+            # Create organized folder structure for results
+            base_folder = "C:/Data/"
+            exam_folder = os.path.join(base_folder, f"Exam_{exam_id}_{exam.exam_name.replace(' ', '_')}")
             
-            file_path = os.path.join(folder_path, f"{student.roll_no}({exam.exam_name}).json")
+            # Create directories if they don't exist
+            os.makedirs(exam_folder, exist_ok=True)
+            
+            # Save the result JSON file in the exam-specific folder
+            file_path = os.path.join(exam_folder, f"{student.roll_no}_result.json")
             with open(file_path, "w", encoding="utf-8") as json_file:
                 json.dump(result_data, json_file, indent=4, ensure_ascii=False)
 

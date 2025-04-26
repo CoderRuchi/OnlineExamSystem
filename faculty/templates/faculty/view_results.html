@@ -431,7 +431,6 @@
                                 <th><i class="fas fa-user me-2"></i>Name</th>
                                 <th><i class="fas fa-star me-2"></i>Total Marks</th>
                                 <th><i class="fas fa-check-circle me-2"></i>Obtained Marks</th>
-                                <th><i class="fas fa-percentage me-2"></i>Percentage</th>
                                 <th><i class="fas fa-info-circle me-2"></i>Status</th>
                             </tr>
                         </thead>
@@ -443,7 +442,6 @@
                                 <td>{{ result.student.name }}</td>
                                 <td>{{ result.total_marks }}</td>
                                 <td>{{ result.obtained_marks }}</td>
-                                <td>{{ result.percentage|floatformat:2 }}%</td>
                                 <td>
                                     {% if result.status == 'attended' %}
                                     <span class="badge badge-attended">
@@ -468,6 +466,9 @@
             <div class="card-footer">
                 <a href="?download=pdf&exam_id={{ exam.id }}" class="btn btn-primary">
                     <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+                <a href="?download=excel&exam_id={{ exam.id }}" class="btn btn-success" style="background-color:  #28a745;">
+                    <i class="fas fa-download me-2"></i>Download as Excel
                 </a>
             </div>
         </div>
