@@ -242,7 +242,7 @@ def start_exam(request, exam_id):
                 "option_4": q["option_4"],
                 "marks": q["marks"],
                 "image_path": q.get("image_path", None),
-                "unit_no": q.get("unit_no", 0)
+                "unit_no": q.get("unit_no", 0) # Displays unit number
             })
             if "student_c_ans" in q and q["student_c_ans"]:
                 previous_answers[str(q["q_id"])] = q["student_c_ans"]

@@ -75,14 +75,14 @@
             font-weight: bold;
             display: flex;
             align-items: center;
-            margin-left: -5rem;
+            margin-left: 1px;
         }
         .navbar-brand:hover {
             transform: translateX(5px);
         }
 
         .navbar-brand h2 {
-            margin: 0;
+            margin-left: 0.6rem;
             font-size: clamp(1rem, 3vw, 2rem);
         }
 
@@ -91,9 +91,12 @@
         }
 
         .logo-img {
-            height: clamp(50px, 5vw, 60px);
+            /* height: clamp(50px, 5vw, 60px); */
+            height: 4rem;
+            border-radius: 50%;
             transition: transform 0.3s ease;
-            margin-right: 10px;
+            margin-right: 15px;
+            margin-left: 0.2rem;
             object-fit: contain;
         }
 
@@ -127,7 +130,8 @@
         }
 
         .navbar-toggler {
-            padding: 0.5rem 0.75rem;
+            margin-left: 0.5px;
+            /* padding: 0.5rem 0.75rem; */
             border: none;
             outline: none;
         }
@@ -348,6 +352,7 @@
             }
             .logo-img {
                 height: 35px;
+                /* height: 4rem; */
                 margin-right: 8px;
             }
             .hero-section {
@@ -372,7 +377,8 @@
                 font-size: 0.9rem;
             }
             .logo-img {
-                height: 30px;
+                /* height: 30px; */
+                height: 4rem;
             }
             .main-title {
                 font-size: 1.5rem;
