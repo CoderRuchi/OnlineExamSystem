@@ -807,23 +807,32 @@ def upload_questions(request):
                 next(reader, None)  # Skip header row
                 for row_num, row in enumerate(reader, start=2):
                     try:
-                        if len(row) < 12:  # Ensure correct number of columns
-                            messages.error(request, "Insufficient no. of columns in CSV. Please check your file.")
-                            return redirect('upload_questions')
-                        
+                        # Check for at least 11 columns
+                        if len(row) < 11:
+                            raise ValueError("Insufficient no. of columns in CSV. Please check your file.")
+
+                        # Unpack first 11 columns
+                        sr_no, code, name, question_text, option1, option2, option3, option4, correct_answer, user_c_answer, mark = [
+                            col.strip() for col in row[:11]
+                        ]
+
+                        # Set unit_no (default to '1' if not present)
+                        if len(row) > 11:
+                            unit_no = row[11].strip()
+                        else:
+                            unit_no = '1'  # Default value
+
+                        # Set image_path (optional)
                         image_path = None
                         if len(row) > 12:
                             image_name = row[12].strip()
                             if image_name:
-                                # Prepend 'media/questions/' to the image name
                                 image_path = f"media/questions/{image_name}"
-
-                        sr_no, code, name, question_text, option1, option2, option3, option4, correct_answer, user_c_answer, mark, unit_no = row[:12]
 
                         # Auto-create course if missing
                         course, created = Course.objects.get_or_create(
-                            code=code.strip(),
-                            name=name.strip(),
+                            code=code,
+                            name=name,
                             faculty=faculty,
                             defaults={'description': 'Auto-created during upload'}
                         )
@@ -833,16 +842,16 @@ def upload_questions(request):
                             sr_no=int(sr_no),
                             course_code=code,
                             course_name=name,
-                            question_text=question_text.strip(),
-                            option1=option1.strip(),
-                            option2=option2.strip(),
-                            option3=option3.strip(),
-                            option4=option4.strip(),
-                            correct_answer=correct_answer.strip(),
+                            question_text=question_text,
+                            option1=option1,
+                            option2=option2,
+                            option3=option3,
+                            option4=option4,
+                            correct_answer=correct_answer,
                             user_c_answer=user_c_answer,
                             mark=int(mark),
                             unit_no=int(unit_no),
-                            image_path=image_path 
+                            image_path=image_path
                         )
 
                     except Exception as e:
@@ -854,7 +863,7 @@ def upload_questions(request):
                     messages.error(request, "❌ Some questions failed to upload")
                 else:
                     messages.success(request, "✅ All questions uploaded successfully!")
-                
+
                 return redirect('upload_questions')
 
             except Exception as e:
@@ -863,11 +872,12 @@ def upload_questions(request):
 
     # Get errors from session if they exist
     upload_errors = request.session.pop('upload_errors', None)
-    
+
     return render(request, 'faculty/upload_questions.html', {
         'form': CSVUploadForm(),
         'upload_errors': upload_errors
     })
+
 from django.db.models import Q
 @login_required
 @user_passes_test(is_faculty)

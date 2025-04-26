@@ -849,6 +849,13 @@
             /* Space for time panel */
         }
 
+        .question-unit {
+            font-size: 0.9em;
+            color: #555;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
         /* Time panel adjustments */
         .time-panel {
             position: fixed;
@@ -1499,13 +1506,13 @@
             optionsContainer.innerHTML = '';
             equationDisplay.innerHTML = '';
 
-            const questionMarks = `<span class="question-marks">[${question.marks || 0} Marks]</span>`;
+            const questionUnit = `<span class="question-unit">[Unit: ${question.unit_no || 'N/A'} ]</span>`;
             const questionContent = question.question_text || question.question || "Question text not available";
 
             if (containsLatex(questionContent)) {
-                questionText.innerHTML = `<strong>${index + 1}.</strong> ${questionContent} ${questionMarks}`;
+                questionText.innerHTML = `<strong>${index + 1}.</strong> ${questionContent} ${questionUnit}`;
             } else {
-                questionText.innerHTML = `<strong>${index + 1}.</strong> ${escapeHtml(questionContent)} ${questionMarks}`;
+                questionText.innerHTML = `<strong>${index + 1}.</strong> ${escapeHtml(questionContent)} ${questionUnit}`;
             }
 
             if (question.latex_equation) {

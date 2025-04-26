@@ -74,7 +74,7 @@ class Question(models.Model):
     user_c_answer = models.CharField(max_length=255,blank=True,null=True)
     mark = models.IntegerField(default=1)
     unit_no = models.IntegerField()
-    image_path = models.CharField(max_length=255, null=True, blank=True)
+    image_path = models.CharField(default=None,max_length=255, null=True, blank=True)
     
     def __str__(self):
         return self.question_text

@@ -94,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'OnlineExam',  # Your database name
         'USER': 'root',  # Your MySQL username
-        'PASSWORD': 'gpn123',  # Your MySQL password
+        'PASSWORD': 'Admin@12345',  # Your MySQL password
         'HOST': 'localhost',
         'PORT': '3306',
     }
