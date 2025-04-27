@@ -1378,7 +1378,7 @@ def view_results(request):
                     data['Obtained Marks'].append(result.obtained_marks)
                     data['Percentage'].append(f"{result.percentage:.2f}%")
                 
-                # Create DataFrame
+                # Create DataFrame - MOVED OUTSIDE THE LOOP
                 df = pd.DataFrame(data)
                 output = BytesIO()
                 writer = pd.ExcelWriter(output, engine='xlsxwriter')
@@ -1390,11 +1390,14 @@ def view_results(request):
                 workbook = writer.book
                 worksheet = writer.sheets['Results']
                 
+                # Get the first result for header info (if exists)
+                first_result = results.first()
+                
                 # Header information (Branch, Course Name, Course Code, Exam Name)
                 header_info = [
-                    ["Branch:", result.student.branch if results.exists() else "N/A"],
+                    ["Programme:", first_result.student.branch if first_result else "N/A"], 
                     ["Course Name:", course.name],
-                    ["Course Code:", course.code],
+                    ["Course Code:", course.code], 
                     ["Exam Name:", exam.exam_name]
                 ]
                 
@@ -1403,21 +1406,30 @@ def view_results(request):
                     'bold': True,
                     'align': 'left',
                     'valign': 'vcenter',
-                    'font_size': 11
+                    'font_size': 11,
                 })
                 
-                # Write header information
-                for row_num, (label, value) in enumerate(header_info, start=0):
-                    worksheet.write(row_num, 0, label, info_format)
-                    worksheet.write(row_num, 1, value, info_format)
+                # Format for header labels (left column)
+                label_format = workbook.add_format({
+                    'bold': True,
+                    'align': 'right',
+                    'valign': 'vcenter',
+                    'font_size': 11,
+                })
+                
+                # Write header information in 2x2 grid
+                for row_num, row_data in enumerate(header_info):
+                    for col_num, value in enumerate(row_data):
+                        # Use label format for even columns (0, 2), info format for odd columns (1, 3)
+                        fmt = label_format if col_num % 2 == 0 else info_format
+                        worksheet.write(row_num, col_num, value, fmt)
                 
                 # Format for column headers
                 header_format = workbook.add_format({
                     'bold': True,
                     'text_wrap': True,
                     'valign': 'top',
-                    'fg_color': '#D7E4BC',
-                    'border': 1
+                    'align': 'center'
                 })
                 
                 # Apply header format to column headers (row 4)
@@ -1427,7 +1439,7 @@ def view_results(request):
                 # Format for data rows
                 data_format = workbook.add_format({
                     'align': 'center',
-                    'valign': 'vcenter'
+                    'valign': 'vcenter',
                 })
                 
                 # Apply data format to all data cells
@@ -1450,7 +1462,6 @@ def view_results(request):
                 )
                 response['Content-Disposition'] = f'attachment; filename="{course.code}_{exam.exam_name}_results.xlsx"'
                 return response
-
             # PDF Download
             elif request.GET.get("download") == "pdf":
                 response = HttpResponse(content_type='application/pdf')
@@ -1468,7 +1479,7 @@ def view_results(request):
 
                 # Header Information Table (4 rows)
                 header_data = [
-                    ["Branch:", student.branch if student else "N/A"],
+                    ["Programme:", student.branch if student else "N/A"],
                     ["Course Name:", course.name],
                     ["Course Code:", course.code],
                     ["Exam Name:", exam.exam_name]
@@ -1692,32 +1703,28 @@ def force_logout(request, roll_no):
         student = Student.objects.get(roll_no=roll_no)
         user = student.user
 
-        if student.exam_start_time and not student.has_attempted_exam:
-            # Get all active sessions
-            sessions = Session.objects.filter(expire_date__gte=timezone.now())
+        # Get all active sessions
+        sessions = Session.objects.filter(expire_date__gte=timezone.now())
 
-            # Filter sessions belonging to this user
-            user_sessions = []
-            for session in sessions:
-                session_data = session.get_decoded()
-                if '_auth_user_id' in session_data and str(session_data['_auth_user_id']) == str(user.id):
-                    user_sessions.append(session.session_key)
+        # Filter sessions belonging to this user
+        user_sessions = []
+        for session in sessions:
+            session_data = session.get_decoded()
+            if '_auth_user_id' in session_data and str(session_data['_auth_user_id']) == str(user.id):
+                user_sessions.append(session.session_key)
 
-            # Delete all sessions for this user
+        # Delete all sessions for this user
+        if user_sessions:
             Session.objects.filter(session_key__in=user_sessions).delete()
 
-            # Preserve exam state but clear session
+        # Reset exam state if student was in exam
+        if student.exam_start_time and not student.has_attempted_exam:
             student.exam_start_time = None
             student.save()
 
-            return JsonResponse({
-                'success': True,
-                'message': f'Student {roll_no} has been logged out from all sessions.'
-            })
-
         return JsonResponse({
-            'success': False,
-            'error': 'Student is not in an active exam session.'
+            'success': True,
+            'message': f'Student {roll_no} has been logged out from all sessions.'
         })
 
     except Student.DoesNotExist:
@@ -1730,7 +1737,6 @@ def force_logout(request, roll_no):
             'success': False,
             'error': str(e)
         }, status=500)
-
 
 from django.shortcuts import render
 from django.utils import timezone

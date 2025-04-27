@@ -79,24 +79,9 @@
 
         /* Adjust the logo image size */
         .logo-img {
-            width: 70px; /* Increase the width */
-            height: 70px; /* Increase the height */
-            margin-right: 20px; /* Add some spacing */
-        }
-
-        .nav-link {
-            font-weight: 500;
-            color: var(--primary-color) !important;
-            margin: 0 10px;
-            padding: 8px 15px !important;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background-color: rgba(52, 152, 219, 0.1);
-            color: var(--secondary-color) !important;
+            width: 70px;
+            height: 70px;
+            margin-right: 20px;
         }
 
         /* Login Container - Student Specific */
@@ -107,11 +92,9 @@
             padding: 40px;
             margin: 20px auto;
             max-width: 600px;
-            height: 400px;
             width: 90%;
             position: relative;
             overflow: hidden;
-            /* border: 2px solid var(--primary-blue); */
             animation: fadeInUp 0.6s ease-out;
             margin-top:20px;
         }
@@ -326,25 +309,6 @@
                     <span class="d-md-none">GPN</span>
                 </div>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'index' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'faculty_login' %}">Admin</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
 
