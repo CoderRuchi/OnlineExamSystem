@@ -22,12 +22,62 @@
             border-radius: 4px;
             padding: 5px;
         }
+        .current-image-preview {
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
-        <!-- Your existing header and filter form code remains the same -->
-        
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-0 text-center">Manage Questions</h2>
+                <div class="text-center mt-3">
+                    <a href="{% url 'faculty_dashboard' %}" class="btn btn-success">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Filter Questions</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="course_code" class="form-label">Course Code</label>
+                        <select name="course_code" id="course_code" class="form-select">
+                            <option value="">All Courses</option>
+                            {% for code in courses %}
+                                <option value="{{ code }}" {% if code == course_code %}selected{% endif %}>{{ code }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="unit_no" class="form-label">Unit</label>
+                        <select name="unit_no" id="unit_no" class="form-select">
+                            <option value="">All Units</option>
+                            {% for unit in units %}
+                                <option value="{{ unit }}" {% if unit == unit_no %}selected{% endif %}>{{ unit }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" name="search" id="search" class="form-control" 
+                               placeholder="Search questions..." value="{{ search_query }}">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">Filter</button>
+                        <a href="{% url 'manage_questions' %}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Questions Table -->
         <div class="card">
             <div class="card-body">
@@ -100,12 +150,12 @@
                                 </td>
                                 <td>
                                     <input type="text" name="image_path" class="form-control form-control-sm" 
-                                           value="{% if question.image_path %}{{ question.image_path.url }}{% endif %}">
+                                           value="{% if question.image_path %}{{ question.image_path }}{% endif %}">
                                     <small class="text-muted">Image path or URL</small>
                                     {% if question.image_path %}
-                                    <div class="mt-2">
+                                    <div class="current-image-preview">
                                         <img src="{{ question.image_path.url }}" alt="Current image" class="question-image">
-                                        <small class="d-block">Current image</small>
+                                        <small>Current image</small>
                                     </div>
                                     {% endif %}
                                 </td>
@@ -193,14 +243,33 @@
         </div>
     </div>
 
-    <!-- Delete Modal (same as before) -->
+    <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
-        <!-- Modal content remains the same -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this question?</p>
+                    <p id="deleteQuestionText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post" action="{% url 'manage_questions' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_question" id="deleteQuestionId">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         $(document).ready(function() {
             // Delete modal setup

@@ -99,14 +99,6 @@ DATABASES = {
         'PORT': '3306',
     }
 }
-# Install python-dotenv: pip install python-dotenv
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
