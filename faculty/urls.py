@@ -33,9 +33,9 @@ urlpatterns = [
     path('update_attendance',views.update_attendance,name='update_attendance'),
     # Question management
     path('upload_questions/', views.upload_questions, name='upload_questions'),
-    path('questions/', views.manage_questions, name='manage_questions'),
     path('truncate_questions/',views.truncate_questions,name='truncate_questions'),
-
+    path('questions/', views.manage_questions, name='manage_questions'),
+    
     #preview exam
     path('preview_exam/<int:exam_id>/', views.preview_exam, name='preview_exam'),
     #exam management

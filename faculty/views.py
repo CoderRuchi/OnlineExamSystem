@@ -1,7 +1,6 @@
 import logging
 import os
 from datetime import timezone
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
@@ -9,6 +8,7 @@ from faculty.models import Faculty, Question, Course, Student, Result, ExamSpeci
 import csv
 import random
 import json
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login as auth_login
@@ -16,13 +16,10 @@ from django.utils.timezone import now
 from reportlab.lib.styles import getSampleStyleSheet  # type: ignore
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer  # type: ignore
 from reportlab.lib import colors  # type: ignore
-from django.db import connection
+from django.db import connection,transaction
 from django.contrib import messages
-from faculty.forms import CSVUploadStudentForm, CSVUploadForm, FacultyRegisterForm,QuestionEditForm
+from faculty.forms import CSVUploadStudentForm, CSVUploadForm, FacultyRegisterForm
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import check_password
-from django.shortcuts import render, redirect
 from .forms import FacultyRegisterForm
 from reportlab.lib.pagesizes import letter # type: ignore
 from reportlab.pdfgen import canvas # type: ignore
@@ -438,9 +435,6 @@ def add_exam_specifications(request):
                 messages.error(request, "Number of units does not match the provided unit marks.")
                 return render(request, "faculty/add_exam_specifications.html", {'specifications': specifications})
 
-        # Calculate questions per unit dynamically
-        #questions_per_unit = calculate_questions_per_unit(total_questions, marks_per_unit, total_marks)
-
         # Create the exam specification
             exam = ExamSpecification.objects.create(
                 exam_name=exam_name,
@@ -576,12 +570,7 @@ def upload_students(request):
                     )
 
                     # Register courses
-                    student.registered_courses.add(course)  # Remove existing registrations
-                    # for course_code in registered_courses:
-                    #     course = Course.objects.filter(code=course_code).first()
-                    #     if course:
-                    #         student.registered_courses.add(course)
-
+                    student.registered_courses.add(course)  
                     student.save()
                     
                 messages.success(request, "✅ Students uploaded successfully!")
@@ -708,7 +697,6 @@ def reset_student_password(request):
         'success': False,
         'message': 'Invalid request method'
     })
-from django.db import transaction
 
 @login_required
 @user_passes_test(is_faculty, login_url='/faculty_login/')
@@ -785,6 +773,7 @@ def truncate_students(request):
 @user_passes_test(is_faculty)
 def upload_questions(request):
     faculty = request.user.faculty
+    courses = Course.objects.all().order_by('name')
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -875,10 +864,58 @@ def upload_questions(request):
 
     return render(request, 'faculty/upload_questions.html', {
         'form': CSVUploadForm(),
-        'upload_errors': upload_errors
+        'upload_errors': upload_errors,
+        'courses':courses
     })
 
-from django.db.models import Q
+import logging
+@login_required
+@user_passes_test(is_faculty, login_url='/faculty_login/')
+def truncate_questions(request):
+    if request.method == "POST":
+        delete_option = request.POST.get('delete_option')
+
+        try:
+            if delete_option == 'all':
+                # Delete all questions
+                with transaction.atomic():
+                    count = Question.objects.count()
+                    Question.objects.all().delete()
+                
+                messages.success(request, f"✅ All {count} questions have been deleted successfully!")
+            else:
+                # Delete questions from selected course
+                course_id = request.POST.get('course_id')
+                print(course_id)
+                if not course_id:
+                    messages.error(request, "Please select a course")
+                    return redirect("upload_questions")
+
+                course = Course.objects.get(id=course_id)
+                print(course)
+                # Get questions for this course
+                questions = Question.objects.filter(course_code=course.code)
+                count = questions.count()
+
+                if count == 0:
+                    messages.warning(request, f"⚠️ No questions found for {course.name}")
+                    return redirect("upload_questions")
+
+                # Delete questions
+                with transaction.atomic():
+                    questions.delete()
+
+                messages.success(request, f"✅ {count} questions for {course.name} have been deleted successfully!")
+
+        except Course.DoesNotExist:
+            messages.error(request, "Selected course does not exist")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error deleting questions: {str(e)}")
+
+    return redirect("upload_questions")
+
 @login_required
 @user_passes_test(is_faculty)
 def manage_questions(request):
@@ -970,22 +1007,21 @@ def manage_questions(request):
     }
     return render(request, 'faculty/manage_questions.html', context)
 # Preview exam view
-@login_required
-@user_passes_test(is_faculty, login_url='/faculty_login/')
-def truncate_questions(request):
-    if request.method =="POST":
-        with connection.cursor() as cursor:
-            cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
-            cursor.execute("TRUNCATE TABLE faculty_question;")
-            cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
-            messages.success(request,"✅ All questions have been deleted successfully!")
-    return redirect("upload_questions")
+# @login_required
+# @user_passes_test(is_faculty, login_url='/faculty_login/')
+# def truncate_questions(request):
+#     if request.method =="POST":
+#         with connection.cursor() as cursor:
+#             cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
+#             cursor.execute("TRUNCATE TABLE faculty_question;")
+#             cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
+#             messages.success(request,"✅ All questions have been deleted successfully!")
+#     return redirect("upload_questions")
 
 # Preview exam view
 @login_required
 @user_passes_test(is_faculty, login_url='/faculty_login/')
-@login_required
-@user_passes_test(is_faculty, login_url='/faculty_login/')
+
 def preview_exam(request, exam_id):
     exam = get_object_or_404(ExamSpecification, id=exam_id)
     course = get_object_or_404(Course, code=exam.course_code)
@@ -1016,7 +1052,6 @@ def preview_exam(request, exam_id):
 # View results view
 @login_required
 @user_passes_test(is_faculty)
-
 def take_exam(request):
     if not is_faculty(request.user):
         raise PermissionDenied
@@ -1223,12 +1258,8 @@ def end_exam(request):
     if request.method == "POST":
         exam_name = request.POST.get("exam_name")
         if exam_name:
-            # exam = ExamSpecification.objects.filter(exam_name=exam_name).first()
             exam = ExamSpecification.objects.filter(exam_name=exam_name).update(is_active=False, end_time=now())
             if exam:
-                # exam.is_active = False
-                # exam.end_time = now()
-                # exam.save()
                 messages.success(request, f"Exam '{exam_name}' has ended!")
             else:
                 messages.error(request, "Exam not found!")
@@ -1240,27 +1271,16 @@ from reportlab.lib.pagesizes import letter # type: ignore
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle # type: ignore
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.styles import getSampleStyleSheet # type: ignore
-from .models import Result, ExamSpecification
-from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.db.models import Q, Avg,Min,Max
-from django.urls import reverse
-from django.utils import timezone
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
-import json
-import os
+from django.db.models import Q, Avg
 from io import BytesIO
 import pandas as pd
-from .models import ExamSpecification, Course, Student, Result
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 # Add course view
+
 @login_required
 @user_passes_test(is_faculty, login_url='/faculty_login/')
-
 def view_results(request):
     # Fetch all exams
     exams = ExamSpecification.objects.all().order_by('id')
@@ -1368,7 +1388,6 @@ def view_results(request):
                     'Name': [],
                     'Total Marks': [],
                     'Obtained Marks': [],
-                    'Percentage': []
                 }
                 
                 for idx, result in enumerate(results, start=1):
@@ -1377,7 +1396,6 @@ def view_results(request):
                     data['Name'].append(result.student.name)
                     data['Total Marks'].append(result.total_marks)
                     data['Obtained Marks'].append(result.obtained_marks)
-                    data['Percentage'].append(f"{result.percentage:.2f}%")
                 
                 # Create DataFrame - MOVED OUTSIDE THE LOOP
                 df = pd.DataFrame(data)
@@ -1463,6 +1481,7 @@ def view_results(request):
                 )
                 response['Content-Disposition'] = f'attachment; filename="{course.code}_{exam.exam_name}_results.xlsx"'
                 return response
+            
             # PDF Download
             elif request.GET.get("download") == "pdf":
                 response = HttpResponse(content_type='application/pdf')
@@ -1537,9 +1556,7 @@ def view_results(request):
 
     return render(request, 'faculty/view_results.html', {'exam_results': exam_results})
 
-from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from .models import Student, Result, ExamSpecification
 
 @require_GET
 def get_pending_students(request):
@@ -1566,6 +1583,7 @@ def get_pending_students(request):
         return JsonResponse({'error': 'Exam not found'}, status=404)
     
 @require_GET
+@user_passes_test(is_faculty, login_url='/faculty_login/')
 def get_exam_stats(request):
     exam_id = request.GET.get('exam_id')
     if not exam_id:
@@ -1607,8 +1625,7 @@ def get_exam_stats(request):
         return JsonResponse({'error': 'Exam not found'}, status=404)
 # Add course view
 @login_required
-# @user_passes_test(is_faculty, login_url='/faculty_login/')
-@user_passes_test(is_faculty)
+@user_passes_test(is_faculty, login_url='/faculty_login/')
 def view_student(request):
     """Detailed view of student exam statuses"""
     # Initialize variables

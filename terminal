@@ -1,0 +1,3 @@
+# Remove the conflicting binary file
+git checkout --ours student/__pycache__/views.cpython-311.pyc
+git add student/__pycache__/views.cpython-311.pyc
