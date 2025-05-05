@@ -904,6 +904,7 @@ def manage_questions(request):
             question = Question.objects.get(id=question_id)
             question.course_code = request.POST.get('course_code')
             question.question_text = request.POST.get('question_text')
+            question.image_path = request.POST.get('image_path')
             question.option1 = request.POST.get('option1')
             question.option2 = request.POST.get('option2')
             question.option3 = request.POST.get('option3')
