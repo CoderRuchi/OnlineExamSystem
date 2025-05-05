@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.models import Session
+
 def student_login(request):
     if request.method == "POST":
         username = request.POST.get('name')
@@ -149,7 +150,6 @@ def welcome(request):
     student = request.user.student  # Access the linked Student profile
         # Fetch the student's registered courses
     registered_courses = student.registered_courses.all()
-    # Fetch the branch (assuming the branch is stored in the Course model)
     # If the student is registered in multiple courses, pick the first one or handle accordingly
     branch = student.branch
           # Fetch scheduled exams for the student's registered courses
@@ -317,8 +317,6 @@ def get_current_question_index(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-import logging
-from django.db import transaction, IntegrityError
 @login_required
 def submit_exam(request):
     if request.method == "POST":
